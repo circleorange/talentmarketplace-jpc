@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Talent Marketplace</string>
+
+    <string name="button_addOffer">Add Position</string>
+    <string name="text_Title">Title</string>
+    <string name="text_titleHint">Enter Title</string>
+</resources>
