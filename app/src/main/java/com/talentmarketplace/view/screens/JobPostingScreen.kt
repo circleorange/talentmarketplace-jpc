@@ -32,6 +32,7 @@ import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import java.time.format.DateTimeFormatter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.talentmarketplace.model.JobPostingModel
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
