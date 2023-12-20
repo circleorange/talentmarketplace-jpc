@@ -1,4 +1,4 @@
-package com.talentmarketplace.models
+package com.talentmarketplace.model
 
 import java.time.LocalDate
 

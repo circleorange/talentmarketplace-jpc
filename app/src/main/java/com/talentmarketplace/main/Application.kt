@@ -1,4 +1,4 @@
-package com.talentmarketplace
+package com.talentmarketplace.main
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

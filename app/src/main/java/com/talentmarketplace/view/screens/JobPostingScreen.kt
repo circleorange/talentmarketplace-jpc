@@ -1,4 +1,4 @@
-package com.talentmarketplace.ui.screens
+package com.talentmarketplace.view.screens
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
@@ -25,14 +25,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.talentmarketplace.R
-import com.talentmarketplace.StandardTextField
-import com.talentmarketplace.ui.theme.JobPostingJPCTheme
+import com.talentmarketplace.main.StandardTextField
+import com.talentmarketplace.view.theme.JobPostingJPCTheme
 import com.talentmarketplace.viewmodel.JobPostingViewModel
 import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import java.time.format.DateTimeFormatter
 import androidx.lifecycle.viewmodel.compose.viewModel
-import timber.log.Timber.i
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
