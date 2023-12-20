@@ -32,6 +32,7 @@ import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import java.time.format.DateTimeFormatter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import timber.log.Timber.i
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +63,7 @@ fun JobPostingScreen(viewModel: JobPostingViewModel = viewModel()) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             StandardTextField(
-                value = "Company Name",
+                value = companyName,
                 onValueChange = { viewModel.companyName.value = it },
                 labelResourceID = R.string.text_companyNameHint,
                 showError = companyNameError != null,
@@ -70,7 +71,7 @@ fun JobPostingScreen(viewModel: JobPostingViewModel = viewModel()) {
             )
 
             StandardTextField(
-                value = "Job Title",
+                value = title,
                 onValueChange = { viewModel.title.value = it },
                 labelResourceID = R.string.text_titleHint,
                 showError = titleError != null,
@@ -78,7 +79,7 @@ fun JobPostingScreen(viewModel: JobPostingViewModel = viewModel()) {
             )
 
             StandardTextField(
-                value = "Job Description",
+                value = description,
                 onValueChange = { viewModel.description.value = it },
                 labelResourceID = R.string.text_jobDescriptionHint,
                 showError = descriptionError != null,
@@ -94,7 +95,6 @@ fun JobPostingScreen(viewModel: JobPostingViewModel = viewModel()) {
                 onValueChangeFinished = {  }
             )
 
-            Text(text = "Start Date", style = MaterialTheme.typography.labelLarge)
             Button(onClick = {
                 val datePickerDialog = DatePickerDialog(
                     context,
@@ -107,13 +107,12 @@ fun JobPostingScreen(viewModel: JobPostingViewModel = viewModel()) {
                 )
                 datePickerDialog.show()
             }) {
+                Text(text = "Start Date: ", style = MaterialTheme.typography.labelLarge)
                 Text(text = selectedDate.format(formatter))
             }
 
             Button(
-                onClick = {
-                    if (viewModel.isValid()) { viewModel.addJobPosting() }
-                },
+                onClick = { viewModel.addJobPosting() },
                 elevation = ButtonDefaults.buttonElevation(20.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")

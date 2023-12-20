@@ -21,7 +21,7 @@ class JobPostingViewModel @Inject constructor(
     var titleError = mutableStateOf<String?>(null)
     var descriptionError = mutableStateOf<String?>(null)
 
-    fun isValid(): Boolean {
+    private fun isValid(): Boolean {
         var isValid = true
 
         companyNameError.value = if (companyName.value.isEmpty()) {
@@ -43,9 +43,10 @@ class JobPostingViewModel @Inject constructor(
     }
 
     fun addJobPosting() {
-        if (isValid()) {
-            // var posting = JobPostingModel()
-            // TODO: Add job posting to database
-        }
+        if (!isValid()) { return }
+        // Only valid input past this point
+        // var posting = JobPostingModel()
+        // TODO: Add job posting to database
+        // TODO: Go to job post listing
     }
 }
