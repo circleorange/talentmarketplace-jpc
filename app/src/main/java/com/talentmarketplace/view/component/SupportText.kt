@@ -1,4 +1,4 @@
-package com.talentmarketplace.view.components
+package com.talentmarketplace.view.component
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

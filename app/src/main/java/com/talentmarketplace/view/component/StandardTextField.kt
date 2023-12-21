@@ -1,4 +1,4 @@
-package com.talentmarketplace.view.components
+package com.talentmarketplace.view.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons

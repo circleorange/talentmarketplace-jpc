@@ -15,6 +15,7 @@ import javax.inject.Inject
 class JobPostingViewModel @Inject constructor(
     private val repository: JobPostingRepository
 ) : ViewModel() {
+
     var companyName = mutableStateOf("")
     var title = mutableStateOf("")
     var description = mutableStateOf("")
@@ -62,7 +63,7 @@ class JobPostingViewModel @Inject constructor(
         repository.addJobPosting(jobPosting)
         _jobPostings.value = repository.getJobPostings()
 
-        i("_jobPostings.value: ${_jobPostings.value}")
+        i("JobPostingViewModel.addJobPosting: ${_jobPostings.value}")
         // TODO: Go to job post listing
     }
 }

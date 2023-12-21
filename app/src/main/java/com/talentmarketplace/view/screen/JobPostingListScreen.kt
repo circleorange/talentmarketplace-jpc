@@ -1,4 +1,4 @@
-package com.talentmarketplace.view.screens
+package com.talentmarketplace.view.screen
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,14 +9,18 @@ import androidx.compose.runtime.getValue
 import com.talentmarketplace.viewmodel.JobPostingListViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.talentmarketplace.model.JobPostingModel
+import com.talentmarketplace.view.theme.JobPostingJPCTheme
 
 @Composable
 fun JobPostingListScreen(viewModel: JobPostingListViewModel = hiltViewModel()) {
     val jobPostings by viewModel.jobPostings.collectAsState()
 
-    LazyColumn {
-        items(jobPostings) { jobPosting -> JobPostingItem(jobPosting)}
+    JobPostingJPCTheme {
+        LazyColumn {
+            items(jobPostings) { jobPosting -> JobPostingItem(jobPosting) }
+        }
     }
+
 }
 
 // Layout for single list item
