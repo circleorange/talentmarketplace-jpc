@@ -25,31 +25,29 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.talentmarketplace.R
-import com.talentmarketplace.main.StandardTextField
+import com.talentmarketplace.view.components.StandardTextField
 import com.talentmarketplace.view.theme.JobPostingJPCTheme
 import com.talentmarketplace.viewmodel.JobPostingViewModel
 import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import java.time.format.DateTimeFormatter
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.talentmarketplace.model.JobPostingModel
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 fun JobPostingScreen(viewModel: JobPostingViewModel = viewModel()) {
 
-    // Binding to ViewModel's state
-    // Main Job Posting Fields
+    // Binding to ViewModel state
     var companyName by viewModel.companyName
     var title by viewModel.title
     var description by viewModel.description
     val payRange by viewModel.payRange
     var selectedDate by viewModel.startDate
+
     val context = LocalContext.current
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    // Errors
     val companyNameError by viewModel.companyNameError
     val titleError by viewModel.titleError
     val descriptionError by viewModel.descriptionError
