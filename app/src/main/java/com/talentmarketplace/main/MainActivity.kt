@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.talentmarketplace.view.components.ShowToolBar
+import com.talentmarketplace.view.screens.JobPostingListScreen
 import com.talentmarketplace.view.screens.JobPostingScreen
 import com.talentmarketplace.view.theme.JobPostingJPCTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,7 +22,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             JobPostingJPCTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     Column( modifier = Modifier.fillMaxSize())
                     {
                         ShowToolBar()
-                        JobPostingScreen()
+                        JobPostingListScreen()
                     }
                 }
             }

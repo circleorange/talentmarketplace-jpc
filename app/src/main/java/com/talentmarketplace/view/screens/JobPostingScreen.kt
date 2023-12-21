@@ -30,13 +30,13 @@ import com.talentmarketplace.view.theme.JobPostingJPCTheme
 import com.talentmarketplace.viewmodel.JobPostingViewModel
 import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import java.time.format.DateTimeFormatter
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
-fun JobPostingScreen(viewModel: JobPostingViewModel = viewModel()) {
+fun JobPostingScreen(viewModel: JobPostingViewModel = hiltViewModel()) {
 
     // Binding to ViewModel state
     var companyName by viewModel.companyName

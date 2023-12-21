@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.talentmarketplace"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.talentmarketplace"
@@ -81,6 +81,7 @@ dependencies {
 
     // HiltViewModel
     implementation("com.google.dagger:hilt-android:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     kapt("com.google.dagger:hilt-compiler:2.44")
 }
 
