@@ -38,5 +38,3 @@ class MainActivity : ComponentActivity() {
         i("Talent Marketplace started")
     }
 }
-
-
