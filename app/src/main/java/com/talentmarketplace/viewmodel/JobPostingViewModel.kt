@@ -1,7 +1,11 @@
 package com.talentmarketplace.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.talentmarketplace.model.JobPostingModel
+import com.talentmarketplace.repository.JobPostingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber.i
 import java.time.LocalDate
@@ -9,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JobPostingViewModel @Inject constructor(
-    // TODO: might need to inject repository in the future
+    private val repository: JobPostingRepository
 ) : ViewModel() {
     var companyName = mutableStateOf("")
     var title = mutableStateOf("")
@@ -42,11 +46,23 @@ class JobPostingViewModel @Inject constructor(
         return isValid
     }
 
+    // Persistence Section
+    private val _jobPostings = MutableLiveData<List<JobPostingModel>>()
+    val jobPostings: LiveData<List<JobPostingModel>> = _jobPostings
+
     fun addJobPosting() {
         if (!isValid()) { return }
-        // Only valid input past this point
-        // var posting = JobPostingModel()
-        // TODO: Add job posting to database
+        // Only valid inputs past this point
+        val jobPosting = JobPostingModel(
+            companyName = companyName.value,
+            title = title.value,
+            description = description.value,
+            payRange = payRange.value,
+            startDate = startDate.value )
+        repository.addJobPosting(jobPosting)
+        _jobPostings.value = repository.getJobPostings()
+
+        i("_jobPostings.value: ${_jobPostings.value}")
         // TODO: Go to job post listing
     }
 }

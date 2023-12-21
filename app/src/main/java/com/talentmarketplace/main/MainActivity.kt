@@ -1,4 +1,4 @@
-package com.talentmarketplace
+package com.talentmarketplace.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,10 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.talentmarketplace.ui.screens.JobPostingScreen
-import com.talentmarketplace.ui.theme.JobPostingJPCTheme
+import com.talentmarketplace.R
+import com.talentmarketplace.view.screens.JobPostingScreen
+import com.talentmarketplace.view.theme.JobPostingJPCTheme
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import timber.log.Timber.i
 
