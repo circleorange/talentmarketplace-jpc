@@ -1,5 +1,6 @@
 package com.talentmarketplace.view.screen
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -16,9 +17,11 @@ import timber.log.Timber.i
 fun JobPostingListScreen(viewModel: JobPostingListViewModel = hiltViewModel()) {
     val jobPostings by viewModel.jobPostings.collectAsState()
 
+    Column {
         LazyColumn {
             items(jobPostings) { jobPosting -> JobPostingItem(jobPosting) }
         }
+    }
 }
 
 // Layout for single list item

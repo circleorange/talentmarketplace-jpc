@@ -39,9 +39,9 @@ import java.time.format.DateTimeFormatter
 fun JobPostingScreen(viewModel: JobPostingViewModel = hiltViewModel()) {
 
     // Binding to ViewModel state
-    var companyName by viewModel.companyName
-    var title by viewModel.title
-    var description by viewModel.description
+    val companyName by viewModel.companyName
+    val title by viewModel.title
+    val description by viewModel.description
     val payRange by viewModel.payRange
     var selectedDate by viewModel.startDate
 
