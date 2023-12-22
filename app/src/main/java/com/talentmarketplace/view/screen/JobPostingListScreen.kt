@@ -10,22 +10,21 @@ import com.talentmarketplace.viewmodel.JobPostingListViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.talentmarketplace.model.JobPostingModel
 import com.talentmarketplace.view.theme.JobPostingJPCTheme
+import timber.log.Timber.i
 
 @Composable
 fun JobPostingListScreen(viewModel: JobPostingListViewModel = hiltViewModel()) {
     val jobPostings by viewModel.jobPostings.collectAsState()
 
-    JobPostingJPCTheme {
         LazyColumn {
             items(jobPostings) { jobPosting -> JobPostingItem(jobPosting) }
         }
-    }
-
 }
 
 // Layout for single list item
 @Composable
 fun JobPostingItem(jobPosting: JobPostingModel) {
+    i("JobPostingListScreen.JobPostingItem.param: $jobPosting")
     Text("Company: ${jobPosting.companyName}")
     Text("Position: ${jobPosting.title}")
 }

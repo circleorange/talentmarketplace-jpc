@@ -22,29 +22,27 @@ import com.talentmarketplace.view.theme.JobPostingJPCTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolBar(onAddClicked: () -> Unit) {
-    JobPostingJPCTheme {
-        TopAppBar(
-            title = {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    color = Color.White
-                )
-            },
-            colors = TopAppBarDefaults.largeTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            ),
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.Filled.Menu,
-                    contentDescription = "Menu",
-                    tint = Color.White
-                )
-            },
-            actions = {
-                IconButton(onClick = onAddClicked) {
-                    Icon(Icons.Filled.Add, contentDescription = "Add Job Posting")
-                }
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(id = R.string.app_name),
+                color = Color.White
+            )
+        },
+        colors = TopAppBarDefaults.largeTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Filled.Menu,
+                contentDescription = "Menu",
+                tint = Color.White
+            )
+        },
+        actions = {
+            IconButton(onClick = onAddClicked) {
+                Icon(Icons.Filled.Add, contentDescription = "Add Job Posting")
             }
-        )
-    }
+        }
+    )
 }

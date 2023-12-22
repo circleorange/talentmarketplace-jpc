@@ -1,5 +1,7 @@
 package com.talentmarketplace.view.navigation
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -25,12 +27,16 @@ fun Navigation() {
 
 @Composable
 fun JobPostingListScreen(navController: NavController) {
-    ToolBar(onAddClicked = { navController.navigate(Screen.JobPostingScreen.route) })
-    JobPostingListScreen()
+    Column {
+        ToolBar(onAddClicked = { navController.navigate(Screen.JobPostingScreen.route) })
+        JobPostingListScreen()
+    }
 }
 
 @Composable
 fun JobPostingScreen(navController: NavController) {
-    ToolBar(onAddClicked = { navController.navigate(Screen.JobPostingListScreen.route) })
-    JobPostingScreen()
+    Column {
+        ToolBar(onAddClicked = { navController.navigate(Screen.JobPostingListScreen.route) })
+        JobPostingScreen()
+    }
 }

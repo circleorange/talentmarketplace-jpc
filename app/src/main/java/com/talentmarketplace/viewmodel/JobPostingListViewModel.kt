@@ -16,16 +16,17 @@ class JobPostingListViewModel @Inject constructor(
     private val repository: JobPostingRepository
 ) : ViewModel() {
 
-    private val _jobPostings = MutableStateFlow<List<JobPostingModel>>(emptyList())
-    val jobPostings: StateFlow<List<JobPostingModel>> = _jobPostings
+    private var _jobPostings = MutableStateFlow<List<JobPostingModel>>(emptyList())
+    var jobPostings: StateFlow<List<JobPostingModel>> = _jobPostings
 
     init {
+        i("JobPostingListViewModel.getJobPostings(): ${repository.getJobPostings()}")
         getJobPostings()
     }
 
     private fun getJobPostings() {
         // coroutine setup to handle async operations
         viewModelScope.launch { _jobPostings.value = repository.getJobPostings() }
-        i("JobPostingListViewModel.getJobPostings(): ${jobPostings.value} ${_jobPostings.value}")
+        i("JobPostingListViewModel.jobPostings.value: ${jobPostings.value} ${_jobPostings.value}")
     }
 }
