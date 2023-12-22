@@ -22,8 +22,14 @@ class JobPostingMemRepository @Inject constructor() : JobPostingRepository {
         jobPostings.removeIf { it.id == jobPostingID }
     }
 
-    override fun updateJobPosting(jobPosting: JobPostingModel) {
+    override fun deleteJobPostings() {
+        jobPostings.clear()
+    }
+
+    override fun updateJobPosting(jobPosting: JobPostingModel): JobPostingModel? {
         val index = jobPostings.indexOfFirst { it.id == jobPosting.id }
-        if (index != -1) { jobPostings[index] = jobPosting }
+        if (index == -1) { return null }
+        jobPostings[index] = jobPosting
+        return getJobPostingByID(jobPosting.id)
     }
 }

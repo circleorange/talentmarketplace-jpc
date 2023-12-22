@@ -8,5 +8,6 @@ interface JobPostingRepository {
     fun getJobPostingByID(jobPostingID: UUID): JobPostingModel?
     fun getJobPostings(): List<JobPostingModel>
     fun deleteJobPosting(jobPostingID: UUID)
-    fun updateJobPosting(jobPosting: JobPostingModel)
+    fun deleteJobPostings()
+    fun updateJobPosting(jobPosting: JobPostingModel): JobPostingModel?
 }

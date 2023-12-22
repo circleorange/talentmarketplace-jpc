@@ -5,9 +5,9 @@ import java.util.UUID
 
 data class JobPostingModel(
     val id: UUID = UUID.randomUUID(),
-    val companyName : String,
-    val title : String,
-    val description : String,
-    val payRange : ClosedFloatingPointRange<Float>,
-    val startDate : LocalDate
+    var companyName : String,
+    var title : String,
+    var description : String,
+    var payRange : ClosedFloatingPointRange<Float>,
+    var startDate : LocalDate
 )
