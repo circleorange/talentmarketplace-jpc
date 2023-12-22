@@ -47,10 +47,6 @@ class JobPostingViewModel @Inject constructor(
         return isValid
     }
 
-    // Persistence Section
-    private val _jobPostings = MutableLiveData<List<JobPostingModel>>()
-    val jobPostings: LiveData<List<JobPostingModel>> = _jobPostings
-
     fun addJobPosting() {
         if (!isValid()) { return }
         // Only valid inputs past this point
@@ -60,10 +56,10 @@ class JobPostingViewModel @Inject constructor(
             description = description.value,
             payRange = payRange.value,
             startDate = startDate.value )
-        repository.addJobPosting(jobPosting)
-        _jobPostings.value = repository.getJobPostings()
 
-        i("JobPostingViewModel.addJobPosting: ${_jobPostings.value}")
-        // TODO: Go to job post listing
+        repository.addJobPosting(jobPosting)
+
+        i("JobPostingViewModel.addJobPosting: $jobPosting")
+        // TODO: Clean input fields
     }
 }

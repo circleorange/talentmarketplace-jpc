@@ -7,6 +7,7 @@ import com.talentmarketplace.repository.JobPostingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber.i
 import javax.inject.Inject
@@ -17,16 +18,16 @@ class JobPostingListViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _jobPostings = MutableStateFlow<List<JobPostingModel>>(emptyList())
-    val jobPostings: StateFlow<List<JobPostingModel>> = _jobPostings
+    val jobPostings = _jobPostings.asStateFlow()
 
     init {
-        i("JobPostingListViewModel.init.getJobPostings(): ${repository.getJobPostings()}")
+        i("JobPostingListViewModel.init")
         getJobPostings()
     }
 
     private fun getJobPostings() {
         // coroutine setup to handle async operations
         viewModelScope.launch { _jobPostings.value = repository.getJobPostings() }
-        i("JobPostingListViewModel.jobPostings.value: ${jobPostings.value} ${_jobPostings.value}")
+        i("JobPostingListViewModel.getJobPostings.value: ${_jobPostings.value}")
     }
 }
