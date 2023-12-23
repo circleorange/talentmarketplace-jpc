@@ -1,8 +1,12 @@
 package com.talentmarketplace.viewmodel
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.talentmarketplace.model.UserModel
+import com.talentmarketplace.model.authentication.AuthState
+import com.talentmarketplace.model.authentication.EmailErrorType
+import com.talentmarketplace.model.authentication.PasswordErrorType
 import com.talentmarketplace.repository.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +21,12 @@ class AuthenticationViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ): ViewModel() {
 
+    // Authentication State
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
+
+    val email = mutableStateOf("")
+    val password = mutableStateOf("")
 
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
@@ -39,7 +47,10 @@ class AuthenticationViewModel @Inject constructor(
             _authState.value = if (result.isSuccess) {
                 AuthState.Authenticated(result.getOrNull()!!)
             }
-            else { AuthState.InvalidAuthentication }
+            else {
+                _emailErrorType.value = EmailErrorType.TAKEN
+                AuthState.InvalidAuthentication
+            }
             i("AuthenticationViewModel.signUp.value: ${_authState.value}")
         }
     }
@@ -48,12 +59,29 @@ class AuthenticationViewModel @Inject constructor(
         // TODO: sign user out
     }
 
+    // Email Validation
+    private val _emailErrorType = mutableStateOf<EmailErrorType?>(null)
+    val emailErrorType: State<EmailErrorType?> = _emailErrorType
+    fun isValidEmail(email: String): Boolean {
+        if (email.isEmpty()) {
+            _emailErrorType.value = EmailErrorType.EMPTY
+            return false
+        }
+        if (!email.contains("@")) {
+            _emailErrorType.value = EmailErrorType.INVALID
+            return false
+        }
+        return true
+    }
 
-    // Authentication states
-    sealed class AuthState {
-        object Unauthenticated: AuthState()
-        object Loading: AuthState()
-        data class Authenticated(val user: UserModel): AuthState()
-        object InvalidAuthentication: AuthState()
+    // Password Validation
+    private val _passwordErrorType = mutableStateOf<PasswordErrorType?>(null)
+    val passwordErrorType: State<PasswordErrorType?> = _passwordErrorType
+    fun isValidPassword(password: String): Boolean {
+        if (password.isEmpty()) {
+            _passwordErrorType.value = PasswordErrorType.EMPTY
+            return false
+        }
+        return true
     }
 }

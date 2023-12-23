@@ -14,9 +14,10 @@
     <string name="account_registration">Create an Account</string>
     <string name="account_login">Welcome Back</string>
 
-    <string name="err_failed_auth">Authentication Failed</string>
+    <string name="err_auth_failed">Authentication Failed</string>
+    <string name="err_email_empty">Email field cannot be empty</string>
     <string name="err_email_taken">Email already in use</string>
-    <string name="err_invalid_email">Invalid email address</string>
-    <string name="err_invalid_password">Invalid password</string>
+    <string name="err_email_invalid">Invalid email address</string>
+    <string name="err_password_empty">Password field cannot be empty</string>
 
 </resources>
