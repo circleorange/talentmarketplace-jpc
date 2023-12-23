@@ -8,4 +8,14 @@
     <string name="text_titleHint">Enter Title</string>
     <string name="text_companyNameHint">Enter Company Name</string>
     <string name="text_jobDescriptionHint">Enter Job Description</string>
+
+    <string name="err_CompanyName">Company Name cannot be empty</string>
+
+    <string name="account_registration">Create an Account</string>
+    <string name="account_login">Welcome Back</string>
+
+    <string name="err_invalid_email">Please enter valid email address</string>
+    <string name="err_taken_email">Email already is use</string>
+    <string name="err_password">Password cannot be empty!</string>
+
 </resources>
