@@ -11,7 +11,8 @@ import com.talentmarketplace.view.theme.JobPostingJPCTheme
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import timber.log.Timber.i
-import com.talentmarketplace.view.navigation.Navigation
+import com.talentmarketplace.view.navigation.MainScreen
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background ) {
-                    Navigation()
+                    MainScreen()
                 }
             }
         }
