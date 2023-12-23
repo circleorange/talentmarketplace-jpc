@@ -3,6 +3,7 @@ package com.talentmarketplace.view.screen
 import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,27 +18,31 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.talentmarketplace.R
 import com.talentmarketplace.view.component.StandardTextField
-import com.talentmarketplace.view.theme.JobPostingJPCTheme
 import com.talentmarketplace.viewmodel.JobPostingViewModel
 import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-fun JobPostingScreen(viewModel: JobPostingViewModel = hiltViewModel()) {
-
+fun JobPostingScreen(
+    viewModel: JobPostingViewModel = hiltViewModel(),
+    navController: NavController,
+    jobPostID: String? = "new",
+    isEditMode: Boolean = false )
+{
     // Binding to ViewModel state
     val companyName by viewModel.companyName
     val title by viewModel.title
@@ -51,6 +56,20 @@ fun JobPostingScreen(viewModel: JobPostingViewModel = hiltViewModel()) {
     val companyNameError by viewModel.companyNameError
     val titleError by viewModel.titleError
     val descriptionError by viewModel.descriptionError
+
+    if (isEditMode) {
+        // Get job post on list view click
+        LaunchedEffect(jobPostID) {
+            jobPostID?.let { viewModel.getJobPostByID(UUID.fromString(it)) }
+        }
+    }
+
+    // Collect exposed navigation commands from view model
+    LaunchedEffect(viewModel) {
+        viewModel.navEvent.collect {
+                route -> navController.navigate(route)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -103,12 +122,36 @@ fun JobPostingScreen(viewModel: JobPostingViewModel = hiltViewModel()) {
             Text(text = selectedDate.format(formatter))
         }
 
-        Button(
-            onClick = { viewModel.addJobPosting() },
-            elevation = ButtonDefaults.buttonElevation(20.dp) ) {
-            Icon(Icons.Default.Add, contentDescription = "Add")
-            Spacer(modifier = Modifier.width(width = 4.dp))
-            Text(stringResource(id = R.string.button_addJobPosting))
+        Row {
+            Button(
+                onClick = {
+                    // Exit early if invalid input, no need for nested if statements
+                    if (!viewModel.isValid()) return@Button
+                    if (isEditMode) {
+                        viewModel.updateJobPost(UUID.fromString(jobPostID))
+                    }
+                    else {
+                        viewModel.addJobPosting()
+                    }
+                    viewModel.onJobPostRedirect()
+                          },
+                elevation = ButtonDefaults.buttonElevation(20.dp) ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+                Spacer(modifier = Modifier.width(width = 4.dp))
+                Text(stringResource(id = R.string.button_addJobPosting))
+            }
+            Button(
+                onClick = {
+                    if (isEditMode) {
+                        viewModel.deleteJobPost(UUID.fromString(jobPostID))
+                        viewModel.onJobPostRedirect()
+                    }
+                          },
+                elevation = ButtonDefaults.buttonElevation(20.dp) ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+                Spacer(modifier = Modifier.width(width = 4.dp))
+                Text(stringResource(id = R.string.button_deleteJobPost))
+            }
         }
     }
 }
