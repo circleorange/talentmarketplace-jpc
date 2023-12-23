@@ -1,4 +1,4 @@
-package com.talentmarketplace.ui.theme
+package com.talentmarketplace.view.theme
 
 import androidx.compose.ui.graphics.Color
 

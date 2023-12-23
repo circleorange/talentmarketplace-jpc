@@ -1,4 +1,4 @@
-package com.talentmarketplace.ui.theme
+package com.talentmarketplace.view.theme
 
 import android.app.Activity
 import android.os.Build
