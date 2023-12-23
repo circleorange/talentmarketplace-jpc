@@ -45,16 +45,15 @@ class JobPostingViewModel @Inject constructor(
         }
     }
 
-    fun clearInputFields() {
-        companyName.value = ""
-        title.value = ""
-        description.value = ""
-        payRange.value = 50f..1000f
-        startDate.value = LocalDate.now()
+    fun deleteJobPost(jobPostID: UUID) {
+        i("JobPostViewModel.deleteJobPost.id: $jobPostID")
+        repository.deleteJobPosting(jobPostID)
     }
+
 
     fun updateJobPost(jobPostID: UUID) {
         if (!isValid()) { return }
+        i("JobPostViewModel.updateJobPost.id: $jobPostID")
         val jobPost = JobPostingModel(
             companyName = companyName.value,
             title = title.value,
@@ -76,7 +75,15 @@ class JobPostingViewModel @Inject constructor(
             startDate = startDate.value
         )
         repository.addJobPosting(jobPost)
-        i("JobPostingViewModel.addJobPosting: $jobPost")
+        i("JobPostingViewModel.addJobPost: $jobPost")
+    }
+
+    fun clearInputFields() {
+        companyName.value = ""
+        title.value = ""
+        description.value = ""
+        payRange.value = 50f..1000f
+        startDate.value = LocalDate.now()
     }
 
     // Validate input

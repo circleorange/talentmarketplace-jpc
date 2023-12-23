@@ -3,6 +3,7 @@ package com.talentmarketplace.view.screen
 import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -114,20 +115,31 @@ fun JobPostingScreen(
             Text(text = selectedDate.format(formatter))
         }
 
-        Button(
-            onClick = {
-                if (isEditMode) {
-                    viewModel.updateJobPost(UUID.fromString(jobPostID))
-                    viewModel.clearInputFields()
-                }
-                else {
-                    viewModel.addJobPosting()
-                    viewModel.clearInputFields()
-                } },
-            elevation = ButtonDefaults.buttonElevation(20.dp) ) {
-            Icon(Icons.Default.Add, contentDescription = "Add")
-            Spacer(modifier = Modifier.width(width = 4.dp))
-            Text(stringResource(id = R.string.button_addJobPosting))
+        Row {
+            Button(
+                onClick = {
+                    if (isEditMode) {
+                        viewModel.updateJobPost(UUID.fromString(jobPostID))
+                        viewModel.clearInputFields()
+                    }
+                    else {
+                        viewModel.addJobPosting()
+                        viewModel.clearInputFields()
+                    } },
+                elevation = ButtonDefaults.buttonElevation(20.dp) ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+                Spacer(modifier = Modifier.width(width = 4.dp))
+                Text(stringResource(id = R.string.button_addJobPosting))
+            }
+            Button(
+                onClick = {
+                    if (isEditMode) viewModel.deleteJobPost(UUID.fromString(jobPostID))
+                          },
+                elevation = ButtonDefaults.buttonElevation(20.dp) ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+                Spacer(modifier = Modifier.width(width = 4.dp))
+                Text(stringResource(id = R.string.button_deleteJobPost))
+            }
         }
     }
 }
