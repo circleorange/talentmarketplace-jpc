@@ -1,14 +1,17 @@
 package com.talentmarketplace.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostingModel
 import com.talentmarketplace.repository.JobPostingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import timber.log.Timber.i
 import java.time.LocalDate
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +29,57 @@ class JobPostingViewModel @Inject constructor(
     var titleError = mutableStateOf<String?>(null)
     var descriptionError = mutableStateOf<String?>(null)
 
+    // Expose job post details for composable
+    private val _jobPostDetails = MutableStateFlow<JobPostingModel?>(null)
+    val jobPostDetails = _jobPostDetails.asStateFlow()
+
+    fun getJobPostByID(id: UUID) {
+        viewModelScope.launch {
+            repository.getJobPostingByID(id)?.let { jobPost ->
+                companyName.value = jobPost.companyName
+                title.value = jobPost.title
+                description.value = jobPost.description
+                payRange.value = jobPost.payRange
+                startDate.value = jobPost.startDate
+            }
+        }
+    }
+
+    fun clearInputFields() {
+        companyName.value = ""
+        title.value = ""
+        description.value = ""
+        payRange.value = 50f..1000f
+        startDate.value = LocalDate.now()
+    }
+
+    fun updateJobPost(jobPostID: UUID) {
+        if (!isValid()) { return }
+        val jobPost = JobPostingModel(
+            companyName = companyName.value,
+            title = title.value,
+            description = description.value,
+            payRange = payRange.value,
+            startDate = startDate.value
+        )
+        repository.updateJobPosting(jobPostID, jobPost)
+    }
+
+    fun addJobPosting() {
+        if (!isValid()) { return }
+        // Only valid inputs past this point
+        val jobPost = JobPostingModel(
+            companyName = companyName.value,
+            title = title.value,
+            description = description.value,
+            payRange = payRange.value,
+            startDate = startDate.value
+        )
+        repository.addJobPosting(jobPost)
+        i("JobPostingViewModel.addJobPosting: $jobPost")
+    }
+
+    // Validate input
     private fun isValid(): Boolean {
         var isValid = true
 
@@ -45,21 +99,5 @@ class JobPostingViewModel @Inject constructor(
         } else null
 
         return isValid
-    }
-
-    fun addJobPosting() {
-        if (!isValid()) { return }
-        // Only valid inputs past this point
-        val jobPosting = JobPostingModel(
-            companyName = companyName.value,
-            title = title.value,
-            description = description.value,
-            payRange = payRange.value,
-            startDate = startDate.value )
-
-        repository.addJobPosting(jobPosting)
-
-        i("JobPostingViewModel.addJobPosting: $jobPosting")
-        // TODO: Clean input fields
     }
 }

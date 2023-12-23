@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,12 +33,15 @@ import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-fun JobPostingScreen(viewModel: JobPostingViewModel = hiltViewModel()) {
-
+fun JobPostingScreen(
+    viewModel: JobPostingViewModel = hiltViewModel(),
+    jobPostID: String? = "new",
+    isEditMode: Boolean = false )
+{
     // Binding to ViewModel state
     val companyName by viewModel.companyName
     val title by viewModel.title
@@ -51,6 +55,13 @@ fun JobPostingScreen(viewModel: JobPostingViewModel = hiltViewModel()) {
     val companyNameError by viewModel.companyNameError
     val titleError by viewModel.titleError
     val descriptionError by viewModel.descriptionError
+
+    if (isEditMode) {
+        // Get job post on list view click
+        LaunchedEffect(jobPostID) {
+            jobPostID?.let { viewModel.getJobPostByID(UUID.fromString(it)) }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -104,7 +115,15 @@ fun JobPostingScreen(viewModel: JobPostingViewModel = hiltViewModel()) {
         }
 
         Button(
-            onClick = { viewModel.addJobPosting() },
+            onClick = {
+                if (isEditMode) {
+                    viewModel.updateJobPost(UUID.fromString(jobPostID))
+                    viewModel.clearInputFields()
+                }
+                else {
+                    viewModel.addJobPosting()
+                    viewModel.clearInputFields()
+                } },
             elevation = ButtonDefaults.buttonElevation(20.dp) ) {
             Icon(Icons.Default.Add, contentDescription = "Add")
             Spacer(modifier = Modifier.width(width = 4.dp))
