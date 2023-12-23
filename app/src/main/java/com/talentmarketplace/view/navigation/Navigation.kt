@@ -54,12 +54,15 @@ fun MainScreen() {
             startDestination = "Home",
             Modifier.padding(innerPadding)) {
             composable("Home") { JobPostingListScreen(navController = navController) }
-            composable("Create") { JobPostingScreen() }
+            composable("Create") { JobPostingScreen(navController = navController) }
             composable("Profile") { JobPostingListScreen(navController = navController) }
             composable("Settings") { JobPostingListScreen(navController = navController) }
             composable("Create/{id}") { backStackEntry ->
                 val jobPostID = backStackEntry.arguments?.getString("id")
-                JobPostingScreen(jobPostID = jobPostID, isEditMode = true)
+                JobPostingScreen(
+                    jobPostID = jobPostID,
+                    isEditMode = true,
+                    navController = navController )
             }
         }
     }
