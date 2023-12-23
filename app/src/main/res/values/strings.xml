@@ -14,8 +14,9 @@
     <string name="account_registration">Create an Account</string>
     <string name="account_login">Welcome Back</string>
 
-    <string name="err_invalid_email">Please enter valid email address</string>
-    <string name="err_taken_email">Email already is use</string>
-    <string name="err_password">Password cannot be empty!</string>
+    <string name="err_failed_auth">Authentication Failed</string>
+    <string name="err_email_taken">Email already in use</string>
+    <string name="err_invalid_email">Invalid email address</string>
+    <string name="err_invalid_password">Invalid password</string>
 
 </resources>
