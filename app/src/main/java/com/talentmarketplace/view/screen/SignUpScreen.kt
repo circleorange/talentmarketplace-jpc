@@ -26,12 +26,14 @@ import com.talentmarketplace.view.component.HeaderLabelComponent
 import com.talentmarketplace.view.component.StandardTextField
 import com.talentmarketplace.viewmodel.AuthenticationViewModel
 import com.talentmarketplace.view.component.StandardButtonComponent
+import com.talentmarketplace.view.navigation.LocalNavController
 
 @Composable
 fun SignUpScreen(
     viewModel: AuthenticationViewModel = hiltViewModel(),
-    navController: NavController
 ) {
+
+    val navController = LocalNavController.current
 
     // User Fields
     val email by viewModel.email
