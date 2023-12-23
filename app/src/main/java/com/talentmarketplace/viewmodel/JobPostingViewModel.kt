@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostingModel
 import com.talentmarketplace.repository.JobPostingRepository
+import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,7 @@ class JobPostingViewModel @Inject constructor(
     val navEvent = _navEvent.asSharedFlow()
 
     fun onJobPostRedirect() {
-        viewModelScope.launch { _navEvent.emit("Home") }
+        viewModelScope.launch { _navEvent.emit(Routes.Job.List.route) }
         i("JobPostListViewModel.onJobPost.redirect")
     }
 

@@ -52,14 +52,12 @@ fun MainScreen() {
         innerPadding ->
         NavHost(
             navController,
-            startDestination = "SignUp",
+            startDestination = Routes.Auth.SignUp.route,
             Modifier.padding(innerPadding)) {
-            composable("SignUp") { SignUpScreen(navController = navController) }
-            composable("Home") { JobPostingListScreen(navController = navController) }
-            composable("Create") { JobPostingScreen(navController = navController) }
-            composable("Profile") { JobPostingListScreen(navController = navController) }
-            composable("Settings") { SignUpScreen(navController = navController) }
-            composable("Create/{id}") { backStackEntry ->
+            composable(Routes.Auth.SignUp.route) { SignUpScreen(navController = navController) }
+            composable(Routes.Job.List.route) { JobPostingListScreen(navController = navController) }
+            composable(Routes.Job.Create.route) { JobPostingScreen(navController = navController) }
+            composable(Routes.Job.Get.route) { backStackEntry ->
                 val jobPostID = backStackEntry.arguments?.getString("id")
                 JobPostingScreen(
                     jobPostID = jobPostID,
@@ -108,7 +106,12 @@ fun NavigationBar(navController: NavController) {
                 selected = selectedItemIndex == index,
                 onClick = {
                     selectedItemIndex = index
-                    navController.navigate(item.label)
+                    when (index) {
+                        0 -> navController.navigate(Routes.Job.List.route)
+                        1 -> navController.navigate(Routes.Job.Create.route)
+                        2 -> navController.navigate(Routes.User.Profile.route)
+                        3 -> navController.navigate(Routes.User.Settings.route)
+                    }
                 },
                 label = { Text(text = item.label) },
                 icon = {

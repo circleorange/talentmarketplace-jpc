@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostingModel
 import com.talentmarketplace.repository.JobPostingRepository
+import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,9 @@ class JobPostingListViewModel @Inject constructor(
     val navCmd = _navCmd.asSharedFlow()
 
     fun onClickJobPost(id: UUID) {
-        viewModelScope.launch { _navCmd.emit("Create/${id}") }
+        viewModelScope.launch {
+            _navCmd.emit(Routes.Job.Get.byID(id.toString()))
+        }
         i("JobPostingListViewModel.onClickJobPost.id: $id")
     }
 
