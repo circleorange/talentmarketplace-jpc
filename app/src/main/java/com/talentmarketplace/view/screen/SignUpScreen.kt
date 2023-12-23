@@ -1,21 +1,31 @@
 package com.talentmarketplace.view.screen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.talentmarketplace.R
 import com.talentmarketplace.model.authentication.EmailErrorType
+import com.talentmarketplace.model.authentication.PasswordErrorType
 import com.talentmarketplace.view.component.HeaderLabelComponent
+import com.talentmarketplace.view.component.StandardTextField
 import com.talentmarketplace.viewmodel.AuthenticationViewModel
+import com.talentmarketplace.view.component.StandardButtonComponent
 
 @Composable
 fun SignUpScreen(
@@ -35,19 +45,44 @@ fun SignUpScreen(
         EmailErrorType.TAKEN -> context.getString(R.string.err_email_taken)
         else -> null
     }
+    val passwordErrorMessage = when (viewModel.passwordErrorType.value) {
+        PasswordErrorType.EMPTY -> context.getString(R.string.err_password_empty)
+        else -> null
+    }
 
     Surface(
         color = Color.White,
         modifier = Modifier.fillMaxSize()
     ) {
-        HeaderLabelComponent(value = stringResource(id = R.string.account_registration))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(20.dp))
+            HeaderLabelComponent(value = stringResource(id = R.string.account_registration))
 
+            StandardTextField(
+                value = email,
+                onValueChange = { viewModel.email.value = it },
+                labelResourceID = R.string.input_label_email,
+                showError = viewModel.emailErrorType.value != null,
+                errorMessage = emailErrorMessage,
+                leadingIcon = Icons.Filled.Email
+            )
+
+            StandardTextField(
+                value = password,
+                onValueChange = { viewModel.password.value = it },
+                labelResourceID = R.string.input_label_password,
+                showError = viewModel.passwordErrorType.value != null,
+                errorMessage = passwordErrorMessage,
+                leadingIcon = Icons.Filled.Lock,
+                hideInput = PasswordVisualTransformation()
+            )
+            
+            StandardButtonComponent(
+                onClick = { viewModel.signUp(email, password) },
+                resourceStringID = R.string.button_singUp
+            )
+        }
     }
-}
-
-@Preview
-@Composable
-fun SignUpScreenPreview(
-) {
-    SignUpScreen()
 }

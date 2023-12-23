@@ -32,6 +32,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.talentmarketplace.view.component.ToolBar
+import com.talentmarketplace.view.screen.SignUpScreen
 
 data class BottomNavigationItem(
     val label: String,
@@ -51,12 +52,13 @@ fun MainScreen() {
         innerPadding ->
         NavHost(
             navController,
-            startDestination = "Home",
+            startDestination = "SignUp",
             Modifier.padding(innerPadding)) {
+            composable("SignUp") { SignUpScreen(navController = navController) }
             composable("Home") { JobPostingListScreen(navController = navController) }
             composable("Create") { JobPostingScreen(navController = navController) }
             composable("Profile") { JobPostingListScreen(navController = navController) }
-            composable("Settings") { JobPostingListScreen(navController = navController) }
+            composable("Settings") { SignUpScreen(navController = navController) }
             composable("Create/{id}") { backStackEntry ->
                 val jobPostID = backStackEntry.arguments?.getString("id")
                 JobPostingScreen(

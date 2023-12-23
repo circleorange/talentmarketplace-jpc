@@ -9,8 +9,10 @@ import com.talentmarketplace.model.authentication.EmailErrorType
 import com.talentmarketplace.model.authentication.PasswordErrorType
 import com.talentmarketplace.repository.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber.i
@@ -20,6 +22,13 @@ import javax.inject.Inject
 class AuthenticationViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ): ViewModel() {
+
+    // Emit Navigation Route
+    private val _navigationEvent = MutableSharedFlow<String>()
+    val navigationEvent = _navigationEvent.asSharedFlow()
+    fun onAuthenticationSuccess() {
+        viewModelScope.launch { _navigationEvent.emit("Home") }
+    }
 
     // Authentication State
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
@@ -42,16 +51,23 @@ class AuthenticationViewModel @Inject constructor(
 
     fun signUp(email: String, password: String) {
         viewModelScope.launch {
+            val validEmail = isValidEmail(email)
+            val validPassword = isValidPassword(password)
+            // Exit function for invalid input
+            if (!validEmail || !validPassword) {
+                i("AuthenticationViewModel.signUp.fail")
+                return@launch
+            }
+
             _authState.value = AuthState.Loading
             val result = authRepository.signUp(email, password)
             _authState.value = if (result.isSuccess) {
                 AuthState.Authenticated(result.getOrNull()!!)
-            }
-            else {
+            } else {
                 _emailErrorType.value = EmailErrorType.TAKEN
                 AuthState.InvalidAuthentication
             }
-            i("AuthenticationViewModel.signUp.value: ${_authState.value}")
+            i("AuthenticationViewModel.signUp.success: ${_authState.value}")
         }
     }
 

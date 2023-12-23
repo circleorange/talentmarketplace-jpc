@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Talent Marketplace</string>
 
+    <!-- Job Post -->
+
     <string name="button_addJobPosting">Add Position</string>
     <string name="button_deleteJobPost">Delete Position</string>
     <string name="text_Title">Title</string>
@@ -13,6 +15,15 @@
 
     <string name="account_registration">Create an Account</string>
     <string name="account_login">Welcome Back</string>
+
+    <!-- Authentication -->>
+
+    <string name="input_label_email">Enter Email Address</string>
+    <string name="input_label_password">Enter Password</string>
+
+    <string name="button_singIn">Sign In</string>
+    <string name="button_singOut">Sign Out</string>
+    <string name="button_singUp">Sign Up</string>
 
     <string name="err_auth_failed">Authentication Failed</string>
     <string name="err_email_empty">Email field cannot be empty</string>

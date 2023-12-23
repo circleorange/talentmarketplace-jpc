@@ -18,7 +18,7 @@ fun HeaderLabelComponent(value: String) {
         text = value,
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 80.dp),
+            .heightIn(min = 60.dp),
         style = TextStyle(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
