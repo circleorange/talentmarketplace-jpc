@@ -31,4 +31,8 @@ class JobPostingMemRepository @Inject constructor() : JobPostingRepository {
         if (index == -1) { return }
         jobPostings[index] = jobPostData
     }
+
+    override fun getJobPostsByUserID(userID: UUID): List<JobPostingModel> {
+        return jobPostings.filter { it.userID == userID }
+    }
 }

@@ -32,6 +32,7 @@ import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.talentmarketplace.view.navigation.LocalNavController
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -39,10 +40,12 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 fun JobPostingScreen(
     viewModel: JobPostingViewModel = hiltViewModel(),
-    navController: NavController,
     jobPostID: String? = "new",
     isEditMode: Boolean = false )
 {
+
+    val navController = LocalNavController.current
+
     // Binding to ViewModel state
     val companyName by viewModel.companyName
     val title by viewModel.title

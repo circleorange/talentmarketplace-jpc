@@ -10,4 +10,5 @@ interface JobPostingRepository {
     fun deleteJobPosting(jobPostingID: UUID)
     fun deleteJobPostings()
     fun updateJobPosting(jobPostID: UUID, jobPostData: JobPostingModel)
+    fun getJobPostsByUserID(userID: UUID): List<JobPostingModel>
 }
