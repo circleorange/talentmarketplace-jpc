@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,8 +44,6 @@ fun SignUpScreen(
 
     // User Field Messages
     val context = LocalContext.current
-    val lNameErrMsg by viewModel.lNameFieldErrMsg
-    // val emailErrorType by viewModel.emailErrorType.value
     val emailErrorMessage = when (viewModel.emailErrorType.value) {
         EmailErrorType.EMPTY -> context.getString(R.string.err_email_empty)
         EmailErrorType.INVALID -> context.getString(R.string.err_email_invalid)
@@ -54,6 +53,13 @@ fun SignUpScreen(
     val passwordErrorMessage = when (viewModel.passwordErrorType.value) {
         PasswordErrorType.EMPTY -> context.getString(R.string.err_password_empty)
         else -> null
+    }
+
+    // Successful Authentication
+    LaunchedEffect(viewModel) {
+        viewModel.navigationEvent.collect {
+            route -> navController.navigate(route)
+        }
     }
 
     Surface(
@@ -71,7 +77,7 @@ fun SignUpScreen(
                 onValueChange = { viewModel.firstName.value = it },
                 labelResourceID = R.string.input_label_fname,
                 showError = viewModel.fNameFieldErrMsg.value != null,
-                errorMessage = viewModel.fNameFieldErrMsg.value,
+                errorMessage = context.getString(R.string.err_fistName_empty),
                 leadingIcon = Icons.Filled.Email
             )
 
@@ -79,8 +85,8 @@ fun SignUpScreen(
                 value = lastName,
                 onValueChange = { viewModel.lastName.value = it },
                 labelResourceID = R.string.input_label_lname,
-                showError = lNameErrMsg != null,
-                errorMessage = lNameErrMsg,
+                showError = viewModel.lNameFieldErrMsg.value != null,
+                errorMessage = context.getString(R.string.err_lastName_empty),
                 leadingIcon = Icons.Filled.Email
             )
 
@@ -104,7 +110,10 @@ fun SignUpScreen(
             )
             
             StandardButtonComponent(
-                onClick = { viewModel.signUp(firstName, lastName, email, password) },
+                onClick = {
+                    viewModel.signUp(firstName, lastName, email, password)
+                    viewModel.onAuthenticationSuccess()
+                          },
                 resourceStringID = R.string.button_singUp
             )
         }

@@ -8,6 +8,7 @@ import com.talentmarketplace.model.authentication.AuthState
 import com.talentmarketplace.model.authentication.EmailErrorType
 import com.talentmarketplace.model.authentication.PasswordErrorType
 import com.talentmarketplace.repository.auth.AuthRepository
+import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,11 @@ class AuthenticationViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<String>()
     val navigationEvent = _navigationEvent.asSharedFlow()
     fun onAuthenticationSuccess() {
-        viewModelScope.launch { _navigationEvent.emit("Home") }
+        viewModelScope.launch {
+            if (_authState.value is AuthState.Authenticated) {
+                _navigationEvent.emit(Routes.Job.List.route)
+            }
+        }
     }
 
     // Authentication State
@@ -134,5 +139,4 @@ class AuthenticationViewModel @Inject constructor(
         } else null
         return true
     }
-
 }
