@@ -25,12 +25,13 @@ class AuthenticationViewModel @Inject constructor(
 ): ViewModel() {
 
     // Emit Navigation Route
-    private val _navigationEvent = MutableSharedFlow<String>()
-    val navigationEvent = _navigationEvent.asSharedFlow()
+    private val _signInEvent = MutableSharedFlow<String>()
+    val signInEvent = _signInEvent.asSharedFlow()
     fun onAuthenticationSuccess() {
         viewModelScope.launch {
             if (_authState.value is AuthState.Authenticated) {
-                _navigationEvent.emit(Routes.Job.List.route)
+                // could be potentially expose in the sign in function
+                _signInEvent.emit(Routes.Job.List.route)
             }
         }
     }
@@ -83,8 +84,12 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
+    private val _signOutEvent = MutableSharedFlow<String>()
+    val signOutEvent = _signOutEvent.asSharedFlow()
     fun signOut() {
-        // TODO: sign user out
+        viewModelScope.launch {
+            _signOutEvent.emit(Routes.Auth.SignUp.route)
+        }
     }
 
     // Email Validation

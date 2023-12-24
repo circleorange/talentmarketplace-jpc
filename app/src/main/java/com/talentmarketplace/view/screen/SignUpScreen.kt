@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.talentmarketplace.R
 import com.talentmarketplace.model.authentication.EmailErrorType
 import com.talentmarketplace.model.authentication.PasswordErrorType
@@ -57,7 +56,7 @@ fun SignUpScreen(
 
     // Successful Authentication
     LaunchedEffect(viewModel) {
-        viewModel.navigationEvent.collect {
+        viewModel.signInEvent.collect {
             route -> navController.navigate(route)
         }
     }
