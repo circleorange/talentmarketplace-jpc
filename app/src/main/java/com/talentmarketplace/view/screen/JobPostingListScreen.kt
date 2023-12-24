@@ -21,13 +21,16 @@ import com.talentmarketplace.viewmodel.JobPostingListViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.talentmarketplace.model.JobPostingModel
+import com.talentmarketplace.view.navigation.LocalNavController
 import timber.log.Timber.i
 
 @Composable
 fun JobPostingListScreen(
     viewModel: JobPostingListViewModel = hiltViewModel(),
-    navController: NavController )
-{
+) {
+
+    val navController = LocalNavController.current
+
     // Get job postings from view model
     val jobPostings by viewModel.jobPostings.collectAsState()
 

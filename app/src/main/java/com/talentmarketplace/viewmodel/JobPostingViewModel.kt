@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostingModel
 import com.talentmarketplace.repository.JobPostingRepository
+import com.talentmarketplace.repository.auth.AuthRepository
+import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JobPostingViewModel @Inject constructor(
-    private val repository: JobPostingRepository
+    private val repository: JobPostingRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     var companyName = mutableStateOf("")
@@ -31,12 +34,13 @@ class JobPostingViewModel @Inject constructor(
     var titleError = mutableStateOf<String?>(null)
     var descriptionError = mutableStateOf<String?>(null)
 
+
     // Expose navigation event to redirect user after successful event
     private val _navEvent = MutableSharedFlow<String>()
     val navEvent = _navEvent.asSharedFlow()
 
     fun onJobPostRedirect() {
-        viewModelScope.launch { _navEvent.emit("Home") }
+        viewModelScope.launch { _navEvent.emit(Routes.Job.List.route) }
         i("JobPostListViewModel.onJobPost.redirect")
     }
 
@@ -62,28 +66,36 @@ class JobPostingViewModel @Inject constructor(
     }
 
     fun updateJobPost(jobPostID: UUID) {
-        i("JobPostViewModel.updateJobPost.id: $jobPostID")
-        val jobPost = JobPostingModel(
-            companyName = companyName.value,
-            title = title.value,
-            description = description.value,
-            payRange = payRange.value,
-            startDate = startDate.value
-        )
-        repository.updateJobPosting(jobPostID, jobPost)
+        viewModelScope.launch {
+            i("JobPostViewModel.updateJobPost.id: $jobPostID")
+            val signedInUser = authRepository.getCurrentUser()
+            val jobPost = JobPostingModel(
+                userID = signedInUser!!.id,
+                companyName = companyName.value,
+                title = title.value,
+                description = description.value,
+                payRange = payRange.value,
+                startDate = startDate.value
+            )
+            repository.updateJobPosting(jobPostID, jobPost)
+        }
     }
 
     fun addJobPosting() {
-        // Only valid inputs past this point
-        val jobPost = JobPostingModel(
-            companyName = companyName.value,
-            title = title.value,
-            description = description.value,
-            payRange = payRange.value,
-            startDate = startDate.value
-        )
-        repository.addJobPosting(jobPost)
-        i("JobPostingViewModel.addJobPost: $jobPost")
+        viewModelScope.launch {
+            // Only valid inputs past this point
+            val signedInUser = authRepository.getCurrentUser()
+            val jobPost = JobPostingModel(
+                userID = signedInUser!!.id,
+                companyName = companyName.value,
+                title = title.value,
+                description = description.value,
+                payRange = payRange.value,
+                startDate = startDate.value
+            )
+            repository.addJobPosting(jobPost)
+            i("JobPostingViewModel.addJobPost: $jobPost")
+        }
     }
 
     fun clearInputFields() {

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Talent Marketplace</string>
 
+    <!-- Job Post -->
+
     <string name="button_addJobPosting">Add Position</string>
     <string name="button_deleteJobPost">Delete Position</string>
     <string name="text_Title">Title</string>
@@ -8,4 +10,32 @@
     <string name="text_titleHint">Enter Title</string>
     <string name="text_companyNameHint">Enter Company Name</string>
     <string name="text_jobDescriptionHint">Enter Job Description</string>
+
+    <string name="err_CompanyName">Company Name cannot be empty</string>
+
+    <!-- Authentication -->>
+    <string name="auth_signUp">Create an Account</string>
+    <string name="auth_signIn">Welcome Back</string>
+
+    <string name="input_label_fname">Enter First Name</string>
+    <string name="input_label_lname">Enter Last Name</string>
+    <string name="input_label_email">Enter Email Address</string>
+    <string name="input_label_password">Enter Password</string>
+
+    <string name="btn_singIn">Sign In</string>
+    <string name="btn_singOut">Sign Out</string>
+    <string name="btn_singUp">Sign Up</string>
+
+    <string name="divider_or">or</string>
+    <string name="divider_haveAccount">Already have an account?</string>
+    <string name="divider_noAccount">Don\'t have an account?</string>
+
+    <string name="err_auth_failed">Authentication Failed</string>
+    <string name="err_fistName_empty">First Name field cannot be empty</string>
+    <string name="err_lastName_empty">Last Name field cannot be empty</string>
+    <string name="err_email_empty">Email field cannot be empty</string>
+    <string name="err_email_taken">Email already in use</string>
+    <string name="err_email_invalid">Invalid email address</string>
+    <string name="err_password_empty">Password field cannot be empty</string>
+
 </resources>
