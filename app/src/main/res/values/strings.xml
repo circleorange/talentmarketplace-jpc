@@ -18,6 +18,8 @@
 
     <!-- Authentication -->>
 
+    <string name="input_label_fname">Enter First Name</string>
+    <string name="input_label_lname">Enter Last Name</string>
     <string name="input_label_email">Enter Email Address</string>
     <string name="input_label_password">Enter Password</string>
 
@@ -26,6 +28,8 @@
     <string name="button_singUp">Sign Up</string>
 
     <string name="err_auth_failed">Authentication Failed</string>
+    <string name="err_fistName_empty">First Name field cannot be empty</string>
+    <string name="err_lastName_empty">Last Name field cannot be empty</string>
     <string name="err_email_empty">Email field cannot be empty</string>
     <string name="err_email_taken">Email already in use</string>
     <string name="err_email_invalid">Invalid email address</string>

@@ -18,13 +18,23 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun signUp(email: String, password: String): Result<UserModel> {
+    override suspend fun signUp(
+        fName: String,
+        lName: String,
+        email: String,
+        password: String
+    ): Result<UserModel> {
         // check if email taken
         if (users.any { it.email == email }) {
             return Result.failure(Exception("User already exists"))
         }
         // create user
-        val newUser = UserModel(email = email, password = password)
+        val newUser = UserModel(
+            firstName = fName,
+            lastName = lName,
+            email = email,
+            password = password
+        )
         users.add(newUser)
         return Result.success(newUser)
     }

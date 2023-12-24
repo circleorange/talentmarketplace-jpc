@@ -36,11 +36,15 @@ fun SignUpScreen(
     val navController = LocalNavController.current
 
     // User Fields
+    val firstName by viewModel.firstName
+    val lastName by viewModel.lastName
     val email by viewModel.email
     val password by viewModel.password
 
     // User Field Messages
     val context = LocalContext.current
+    val lNameErrMsg by viewModel.lNameFieldErrMsg
+    // val emailErrorType by viewModel.emailErrorType.value
     val emailErrorMessage = when (viewModel.emailErrorType.value) {
         EmailErrorType.EMPTY -> context.getString(R.string.err_email_empty)
         EmailErrorType.INVALID -> context.getString(R.string.err_email_invalid)
@@ -63,6 +67,24 @@ fun SignUpScreen(
             HeaderLabelComponent(value = stringResource(id = R.string.account_registration))
 
             StandardTextField(
+                value = firstName,
+                onValueChange = { viewModel.firstName.value = it },
+                labelResourceID = R.string.input_label_fname,
+                showError = viewModel.fNameFieldErrMsg.value != null,
+                errorMessage = viewModel.fNameFieldErrMsg.value,
+                leadingIcon = Icons.Filled.Email
+            )
+
+            StandardTextField(
+                value = lastName,
+                onValueChange = { viewModel.lastName.value = it },
+                labelResourceID = R.string.input_label_lname,
+                showError = lNameErrMsg != null,
+                errorMessage = lNameErrMsg,
+                leadingIcon = Icons.Filled.Email
+            )
+
+            StandardTextField(
                 value = email,
                 onValueChange = { viewModel.email.value = it },
                 labelResourceID = R.string.input_label_email,
@@ -82,7 +104,7 @@ fun SignUpScreen(
             )
             
             StandardButtonComponent(
-                onClick = { viewModel.signUp(email, password) },
+                onClick = { viewModel.signUp(firstName, lastName, email, password) },
                 resourceStringID = R.string.button_singUp
             )
         }
