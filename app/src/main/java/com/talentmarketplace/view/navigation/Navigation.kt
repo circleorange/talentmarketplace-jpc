@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.talentmarketplace.view.component.ToolBar
 import com.talentmarketplace.view.screen.SettingsScreen
+import com.talentmarketplace.view.screen.SignInScreen
 import com.talentmarketplace.view.screen.SignUpScreen
 
 data class BottomNavigationItem(
@@ -59,12 +60,13 @@ fun MainScreen() {
             bottomBar = { NavigationBar(navController) } ) {
             innerPadding -> NavHost(
                 navController,
-                startDestination = Routes.Auth.SignUp.route,
+                startDestination = Routes.Auth.SignIn.route,
                 Modifier.padding(innerPadding)
             ) {
                 composable(Routes.User.Settings.route) { SettingsScreen() }
                 composable(Routes.Auth.SignUp.route) { SignUpScreen() }
-                composable(Routes.Auth.SignOut.route) { SignUpScreen() }
+                composable(Routes.Auth.SignOut.route) { SignInScreen() }
+                composable(Routes.Auth.SignIn.route) { SignInScreen() }
                 composable(Routes.Job.List.route) { JobPostingListScreen() }
                 composable(Routes.Job.Create.route) { JobPostingScreen() }
                 composable(Routes.Job.Get.route) { backStackEntry ->

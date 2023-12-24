@@ -6,16 +6,22 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor() : AuthRepository {
     private val users = mutableListOf<UserModel>()
+    private var signedInUser: UserModel? = null
 
     override suspend fun signIn(email: String, password: String): Result<UserModel> {
         // find user
         val user = users.firstOrNull { it.email == email && it.password == password }
-        return if (user != null) { Result.success(user) }
-        else { Result.failure(Exception("Authentication failed")) }
+        return if (user != null) {
+            signedInUser = user
+            Result.success(user)
+        }
+        else {
+            Result.failure(Exception("Authentication failed"))
+        }
     }
 
     override suspend fun signOut() {
-        TODO("Not yet implemented")
+        signedInUser = null
     }
 
     override suspend fun signUp(
@@ -36,6 +42,11 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
             password = password
         )
         users.add(newUser)
+        signedInUser = newUser
         return Result.success(newUser)
+    }
+
+    override suspend fun getCurrentUser(): UserModel? {
+        return signedInUser
     }
 }

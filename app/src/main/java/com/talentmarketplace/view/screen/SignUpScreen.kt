@@ -23,9 +23,10 @@ import com.talentmarketplace.R
 import com.talentmarketplace.model.authentication.EmailErrorType
 import com.talentmarketplace.model.authentication.PasswordErrorType
 import com.talentmarketplace.view.component.HeaderLabelComponent
+import com.talentmarketplace.view.component.HorizontalDividerComponent
 import com.talentmarketplace.view.component.StandardTextField
 import com.talentmarketplace.viewmodel.AuthenticationViewModel
-import com.talentmarketplace.view.component.StandardButtonComponent
+import com.talentmarketplace.view.component.WideButtonComponent
 import com.talentmarketplace.view.navigation.LocalNavController
 
 @Composable
@@ -54,9 +55,15 @@ fun SignUpScreen(
         else -> null
     }
 
-    // Successful Authentication
     LaunchedEffect(viewModel) {
         viewModel.signInEvent.collect {
+                route -> navController.navigate(route)
+        }
+    }
+
+    // Successful Authentication
+    LaunchedEffect(viewModel) {
+        viewModel.signUpEvent.collect {
             route -> navController.navigate(route)
         }
     }
@@ -69,7 +76,7 @@ fun SignUpScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(20.dp))
-            HeaderLabelComponent(value = stringResource(id = R.string.account_registration))
+            HeaderLabelComponent(value = stringResource(id = R.string.auth_signUp))
 
             StandardTextField(
                 value = firstName,
@@ -107,13 +114,23 @@ fun SignUpScreen(
                 leadingIcon = Icons.Filled.Lock,
                 hideInput = PasswordVisualTransformation()
             )
-            
-            StandardButtonComponent(
+
+            WideButtonComponent(
                 onClick = {
                     viewModel.signUp(firstName, lastName, email, password)
-                    viewModel.onAuthenticationSuccess()
-                          },
-                resourceStringID = R.string.button_singUp
+                },
+                label = R.string.btn_singUp
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            HorizontalDividerComponent(text = R.string.divider_or)
+
+            HorizontalDividerComponent(text = R.string.divider_haveAccount)
+
+            WideButtonComponent(
+                onClick = { viewModel.signIn() },
+                label = R.string.btn_singIn
             )
         }
     }

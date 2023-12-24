@@ -24,18 +24,6 @@ class AuthenticationViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ): ViewModel() {
 
-    // Emit Navigation Route
-    private val _signInEvent = MutableSharedFlow<String>()
-    val signInEvent = _signInEvent.asSharedFlow()
-    fun onAuthenticationSuccess() {
-        viewModelScope.launch {
-            if (_authState.value is AuthState.Authenticated) {
-                // could be potentially expose in the sign in function
-                _signInEvent.emit(Routes.Job.List.route)
-            }
-        }
-    }
-
     // Authentication State
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -45,18 +33,44 @@ class AuthenticationViewModel @Inject constructor(
     val email = mutableStateOf("")
     val password = mutableStateOf("")
 
+    private val _signInEvent = MutableSharedFlow<String>()
+    val signInEvent = _signInEvent.asSharedFlow()
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
+
+            // Validate fields not empty
+            val validEmail = isValidEmail(email)
+            val validPassword = isValidPassword(password)
+
+            // Exit function for invalid input
+            if (!validEmail || !validPassword) {
+                i("AuthenticationViewModel.signIn.fail.empty")
+                return@launch
+            }
             _authState.value = AuthState.Loading
             val result = authRepository.signIn(email, password)
-            _authState.value = if (result.isSuccess) {
-                AuthState.Authenticated(result.getOrNull()!!)
+
+            if (result.isSuccess) {
+                val user = result.getOrNull()!!
+                _authState.value = AuthState.Authenticated(user)
+                _signInEvent.emit(Routes.Job.List.route)
+                i("AuthenticationViewModel.signIn.value: ${_authState.value}")
             }
-            else { AuthState.InvalidAuthentication }
-            i("AuthenticationViewModel.signIn.value: ${_authState.value}")
+            else {
+                _authState.value = AuthState.InvalidAuthentication
+                i("AuthenticationViewModel.signIn.fail.invalid")
+            }
         }
     }
 
+    fun signIn() {
+        viewModelScope.launch {
+            _signInEvent.emit(Routes.Auth.SignIn.route)
+        }
+    }
+
+    private val _signUpEvent = MutableSharedFlow<String>()
+    val signUpEvent = _signUpEvent.asSharedFlow()
     fun signUp(firstName: String, lastName: String, email: String, password: String) {
         viewModelScope.launch {
 
@@ -74,13 +88,23 @@ class AuthenticationViewModel @Inject constructor(
 
             _authState.value = AuthState.Loading
             val result = authRepository.signUp(firstName, lastName, email, password)
-            _authState.value = if (result.isSuccess) {
-                AuthState.Authenticated(result.getOrNull()!!)
-            } else {
-                _emailErrorType.value = EmailErrorType.TAKEN
-                AuthState.InvalidAuthentication
+
+            if (result.isSuccess) {
+                val user = result.getOrNull()!!
+                _authState.value = AuthState.Authenticated(user)
+                _signUpEvent.emit(Routes.Job.List.route)
+                i("AuthenticationViewModel.signUp.success: ${_authState.value}")
             }
-            i("AuthenticationViewModel.signUp.success: ${_authState.value}")
+            else {
+                _emailErrorType.value = EmailErrorType.TAKEN
+                _authState.value = AuthState.InvalidAuthentication
+            }
+        }
+    }
+
+    fun signUp() {
+        viewModelScope.launch {
+            _signUpEvent.emit(Routes.Auth.SignUp.route)
         }
     }
 
@@ -88,7 +112,7 @@ class AuthenticationViewModel @Inject constructor(
     val signOutEvent = _signOutEvent.asSharedFlow()
     fun signOut() {
         viewModelScope.launch {
-            _signOutEvent.emit(Routes.Auth.SignUp.route)
+            _signOutEvent.emit(Routes.Auth.SignIn.route)
         }
     }
 

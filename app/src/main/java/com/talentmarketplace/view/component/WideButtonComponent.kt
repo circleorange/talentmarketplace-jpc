@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +25,7 @@ import com.talentmarketplace.view.theme.Secondary
 @Composable
 fun WideButtonComponent(
     onClick: () -> Unit,
-    label: String
+    label: Int
 ) {
     Button(
         onClick = onClick,
@@ -45,21 +46,11 @@ fun WideButtonComponent(
            contentAlignment = Alignment.Center
        ) {
             Text(
-                text = label,
+                text = stringResource(label),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
 
             )
        }
     }
-}
-
-@Composable
-@Preview
-fun WideButtonComponentPreview(
-) {
-    WideButtonComponent(
-        onClick = { Unit },
-        label = "Sign Out",
-    )
 }

@@ -8,8 +8,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.talentmarketplace.R
 import com.talentmarketplace.view.component.WideButtonComponent
 import com.talentmarketplace.view.navigation.LocalNavController
 import com.talentmarketplace.view.navigation.Routes
@@ -20,6 +22,7 @@ fun SettingsScreen(
     viewModel: AuthenticationViewModel = hiltViewModel()
 ) {
     val navController = LocalNavController.current
+    val context = LocalContext.current
 
     LaunchedEffect(viewModel) {
         viewModel.signOutEvent.collect {
@@ -36,7 +39,7 @@ fun SettingsScreen(
         ) {
             WideButtonComponent(
                 onClick = { viewModel.signOut() },
-                label = "Sign Out"
+                label = R.string.btn_singOut
             )
         }
     }

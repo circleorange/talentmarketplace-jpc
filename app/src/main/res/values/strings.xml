@@ -13,19 +13,22 @@
 
     <string name="err_CompanyName">Company Name cannot be empty</string>
 
-    <string name="account_registration">Create an Account</string>
-    <string name="account_login">Welcome Back</string>
-
     <!-- Authentication -->>
+    <string name="auth_signUp">Create an Account</string>
+    <string name="auth_signIn">Welcome Back</string>
 
     <string name="input_label_fname">Enter First Name</string>
     <string name="input_label_lname">Enter Last Name</string>
     <string name="input_label_email">Enter Email Address</string>
     <string name="input_label_password">Enter Password</string>
 
-    <string name="button_singIn">Sign In</string>
-    <string name="button_singOut">Sign Out</string>
-    <string name="button_singUp">Sign Up</string>
+    <string name="btn_singIn">Sign In</string>
+    <string name="btn_singOut">Sign Out</string>
+    <string name="btn_singUp">Sign Up</string>
+
+    <string name="divider_or">or</string>
+    <string name="divider_haveAccount">Already have an account?</string>
+    <string name="divider_noAccount">Don\'t have an account?</string>
 
     <string name="err_auth_failed">Authentication Failed</string>
     <string name="err_fistName_empty">First Name field cannot be empty</string>
