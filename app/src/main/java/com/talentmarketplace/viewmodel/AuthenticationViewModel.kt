@@ -35,12 +35,6 @@ class AuthenticationViewModel @Inject constructor(
     private val signInMethodManager: SignInMethodManager,
 ): ViewModel() {
 
-    fun addUser(user: FirestoreUserModel) {
-        viewModelScope.launch {
-            userRepository.addUserToFirestore(user)
-        }
-    }
-
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState = _authState.asStateFlow()
 
@@ -240,8 +234,9 @@ class AuthenticationViewModel @Inject constructor(
             _authState.value = result.data.let { AuthState.Authenticated(it) }
             i("AuthenticationViewModel.processGoogleSignInResult: ${_authState.value}")
 
-            val firebaseUser = result.data.toFirestoreUser()
-            userRepository.addUserToFirestore(firebaseUser)
+            // val firebaseUser = result.data.toFirestoreUser()
+            // userRepository.createUser(firebaseUser)
+            userRepository.createUser(result.data)
 
             signInMethodManager.setSignInMethod(SignInMethodManager.GOOGLE)
 

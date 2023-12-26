@@ -4,13 +4,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.toObject
 import com.talentmarketplace.model.JobPostModel
+import com.talentmarketplace.repository.JobPostRepository
 import kotlinx.coroutines.tasks.await
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class JobPostFirestoreRepository @Inject constructor(
-    private val db: FirebaseFirestore
-) {
+    private val db: FirebaseFirestore,
+): JobPostRepository {
     private val jobPostsCollection = db.collection("jobPosts")
 
     override suspend fun createJobPost(jobPost: JobPostModel) {
@@ -60,6 +61,18 @@ class JobPostFirestoreRepository @Inject constructor(
         try {
             jobPostsCollection
                 .document(jobPostID)
+                .delete()
+                .await()
+        }
+        catch (e: FirebaseFirestoreException) {
+            e.printStackTrace()
+        }
+    }
+
+    override suspend fun deleteJobPosts() {
+        try {
+            jobPostsCollection
+                .document()
                 .delete()
                 .await()
         }

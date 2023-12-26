@@ -3,11 +3,11 @@ package com.talentmarketplace.repository
 import com.talentmarketplace.model.JobPostModel
 
 interface JobPostRepository {
-    fun createJobPost(jobPost: JobPostModel)
-    fun getJobPostByID(jobPostID: String): JobPostModel?
-    fun getJobPosts(): List<JobPostModel>
-    fun deleteJobPost(jobPostID: String)
-    fun deleteJobPosts()
-    fun updateJobPost(jobPostID: String, jobPostData: JobPostModel)
-    fun getJobPostsByUserID(userID: String): List<JobPostModel>
+    suspend fun createJobPost(jobPost: JobPostModel)
+    suspend fun getJobPostByID(jobPostID: String): JobPostModel?
+    suspend fun getJobPosts(): List<JobPostModel>
+    suspend fun deleteJobPost(jobPostID: String)
+    suspend fun deleteJobPosts()
+    suspend fun updateJobPost(jobPostID: String, jobPostData: JobPostModel)
+    suspend fun getJobPostsByUserID(userID: String): List<JobPostModel>
 }

@@ -2,6 +2,8 @@ package com.talentmarketplace.repository.module
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.talentmarketplace.repository.firestore.UserFirestoreRepository
 import com.talentmarketplace.utils.SignInMethodManager
 import dagger.Module
@@ -17,7 +19,12 @@ class RepositoryProvidesModule {
     // Provides used to tell dagger how to provide instances that cannot be constructor-injected
     @Provides
     @Singleton
-    fun provideFirestoreUserRepository(): UserFirestoreRepository = UserFirestoreRepository()
+    fun provideUserFirestoreRepository(
+        db: FirebaseFirestore,
+        firebaseAuth: FirebaseAuth,
+    ): UserFirestoreRepository {
+        return UserFirestoreRepository(firebaseAuth, db)
+    }
 
     @Provides
     @Singleton

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostModel
 import com.talentmarketplace.repository.JobPostRepository
 import com.talentmarketplace.repository.auth.BasicAuthRepository
-import com.talentmarketplace.repository.auth.GoogleAuthRepository
+import com.talentmarketplace.repository.firestore.UserFirestoreRepository
 import com.talentmarketplace.utils.SignInMethodManager
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,16 +21,16 @@ import javax.inject.Inject
 class JobPostingListViewModel @Inject constructor(
     private val repository: JobPostRepository,
     private val basicAuthRepository: BasicAuthRepository,
-    private val authRepository: GoogleAuthRepository,
     private val signInMethodManager: SignInMethodManager,
+    private val userFirestoreRepository: UserFirestoreRepository,
 ) : ViewModel() {
 
     private val signInMethod: String
         get() = signInMethodManager.getSignInMethod()
 
     // Expose job posts
-    private val _jobPostings = MutableStateFlow<List<JobPostModel>>(emptyList())
-    val jobPostings = _jobPostings.asStateFlow()
+    private val _jobPosts = MutableStateFlow<List<JobPostModel>>(emptyList())
+    val jobPostings = _jobPosts.asStateFlow()
 
     private fun getJobPosts() {
         // coroutine setup to handle async operations
@@ -39,14 +39,16 @@ class JobPostingListViewModel @Inject constructor(
                 i("JobPostListViewModel.getJobPosts.signInMethod.BASIC")
                 val signedInUser = basicAuthRepository.getCurrentUser()
                 i("JobPostListViewModel.getJobPosts.userId: $signedInUser.id")
-                _jobPostings.value = repository.getJobPostsByUserID(signedInUser!!.uid)
+                _jobPosts.value = repository.getJobPostsByUserID(signedInUser!!.uid)
             }
             else if (signInMethod == SignInMethodManager.GOOGLE) {
                 i("JobPostListViewModel.getJobPosts.signInMethod.GOOGLE")
+                val currentUserID = userFirestoreRepository.getCurrentUser()!!.uid
+                _jobPosts.value = repository.getJobPostsByUserID(currentUserID)
             }
 
         }
-        i("JobPostingListViewModel.getJobPostings.value: ${_jobPostings.value}")
+        i("JobPostingListViewModel.getJobPosts.items: ${_jobPosts.value}")
     }
 
     // Expose SharedFlow to emit navigation route

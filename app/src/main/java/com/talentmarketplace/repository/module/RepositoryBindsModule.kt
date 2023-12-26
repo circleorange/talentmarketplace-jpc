@@ -1,11 +1,13 @@
 package com.talentmarketplace.repository.module
 
 import com.talentmarketplace.repository.JobPostRepository
+import com.talentmarketplace.repository.UserRepository
 import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.repository.auth.GoogleAuthRepository
 import com.talentmarketplace.repository.auth.basic.BasicAuthRepositoryImpl
 import com.talentmarketplace.repository.auth.firebase.GoogleAuthRepositoryImpl
 import com.talentmarketplace.repository.firestore.JobPostFirestoreRepository
+import com.talentmarketplace.repository.firestore.UserFirestoreRepository
 import com.talentmarketplace.repository.mem.JobPostMemRepository
 import dagger.Binds
 import dagger.Module
@@ -37,4 +39,10 @@ abstract class RepositoryBindsModule {
     abstract fun bindGoogleAuthRepository(
         googleAuthRepositoryImpl: GoogleAuthRepositoryImpl
     ): GoogleAuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(
+        userFirestoreRepository: UserFirestoreRepository
+    ): UserRepository
 }
