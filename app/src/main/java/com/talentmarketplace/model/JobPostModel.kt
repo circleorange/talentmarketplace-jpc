@@ -10,5 +10,5 @@ data class JobPostModel(
     var title : String,
     var description : String,
     var payRange : ClosedFloatingPointRange<Float>,
-    var startDate : LocalDate
+    var startDate : LocalDate,
 )

@@ -1,13 +1,14 @@
-package com.talentmarketplace.repository
+package com.talentmarketplace.repository.mem
 
 import com.talentmarketplace.model.JobPostModel
+import com.talentmarketplace.repository.JobPostRepository
 import javax.inject.Inject
 
 
 class JobPostMemRepository @Inject constructor() : JobPostRepository {
     private val jobPostings = mutableListOf<JobPostModel>()
 
-    override fun addJobPost(jobPost: JobPostModel) {
+    override fun createJobPost(jobPost: JobPostModel) {
         jobPostings.add(jobPost)
     }
 
@@ -15,13 +16,13 @@ class JobPostMemRepository @Inject constructor() : JobPostRepository {
         return jobPostings.find { it.id == jobPostID }
     }
 
-    override fun getJobPostings(): List<JobPostModel> = jobPostings
+    override fun getJobPosts(): List<JobPostModel> = jobPostings
 
     override fun deleteJobPost(jobPostID: String) {
         jobPostings.removeIf { it.id == jobPostID }
     }
 
-    override fun deleteJobPost() {
+    override fun deleteJobPosts() {
         jobPostings.clear()
     }
 

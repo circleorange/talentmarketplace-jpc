@@ -3,10 +3,9 @@ package com.talentmarketplace.repository.firestore
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.talentmarketplace.model.FirestoreUserModel
-import com.talentmarketplace.model.UserModel
 import kotlinx.coroutines.tasks.await
 
-class FirestoreUserRepository {
+class UserFirestoreRepository {
     private val db = FirebaseFirestore.getInstance()
     private val usersCollection = db.collection("users")
 

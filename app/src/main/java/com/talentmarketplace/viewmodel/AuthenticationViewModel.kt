@@ -6,7 +6,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseUser
 import com.talentmarketplace.model.FirestoreUserModel
 import com.talentmarketplace.model.UserModel
 import com.talentmarketplace.model.authentication.AuthState
@@ -15,8 +14,7 @@ import com.talentmarketplace.model.authentication.PasswordErrorType
 import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.repository.auth.GoogleAuthRepository
 import com.talentmarketplace.repository.auth.firebase.GoogleAuthState
-import com.talentmarketplace.repository.auth.firebase.SignInResult
-import com.talentmarketplace.repository.firestore.FirestoreUserRepository
+import com.talentmarketplace.repository.firestore.UserFirestoreRepository
 import com.talentmarketplace.utils.SignInMethodManager
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +31,7 @@ import javax.inject.Inject
 class AuthenticationViewModel @Inject constructor(
     private val basicAuthRepository: BasicAuthRepository,
     private val googleAuthRepository: GoogleAuthRepository,
-    private val userRepository: FirestoreUserRepository,
+    private val userRepository: UserFirestoreRepository,
     private val signInMethodManager: SignInMethodManager,
 ): ViewModel() {
 

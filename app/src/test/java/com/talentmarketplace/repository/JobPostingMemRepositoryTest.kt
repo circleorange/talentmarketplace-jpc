@@ -2,6 +2,7 @@ package com.talentmarketplace.repository
 
 import com.talentmarketplace.data.TestJobPostingData
 import com.talentmarketplace.model.JobPostModel
+import com.talentmarketplace.repository.mem.JobPostMemRepository
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
@@ -29,9 +30,9 @@ class JobPostingMemRepositoryTest {
     fun `addJobPosting - success`() {
         val jobPosting = TestJobPostingData.jobPostingAtGoogle
 
-        repository.addJobPost(jobPosting)
+        repository.createJobPost(jobPosting)
 
-        val response = repository.getJobPostings()
+        val response = repository.getJobPosts()
 
         // Verify job posting is created
         assertTrue(response.contains(jobPosting))
@@ -43,12 +44,12 @@ class JobPostingMemRepositoryTest {
         val jobPosting2 = TestJobPostingData.jobPostingAtMicrosoft
         val jobPosting3 = TestJobPostingData.jobPostingAtContruction
 
-        repository.addJobPost(jobPosting1)
-        repository.addJobPost(jobPosting2)
-        repository.addJobPost(jobPosting3)
+        repository.createJobPost(jobPosting1)
+        repository.createJobPost(jobPosting2)
+        repository.createJobPost(jobPosting3)
 
         // Verify multiple postings exist
-        assertEquals(3, repository.getJobPostings().size)
+        assertEquals(3, repository.getJobPosts().size)
     }
 
     @Test
@@ -64,7 +65,7 @@ class JobPostingMemRepositoryTest {
             startDate = LocalDate.of(2023, 12, 21)
         )
 
-        repository.addJobPost(jobPosting)
+        repository.createJobPost(jobPosting)
 
         // Verify same job posting is returned as requested
         assertEquals(jobPosting, repository.getJobPostByID(id))
@@ -77,9 +78,9 @@ class JobPostingMemRepositoryTest {
         val jobPosting2 = TestJobPostingData.jobPostingAtMicrosoft
         val jobPosting3 = TestJobPostingData.jobPostingAtContruction
 
-        repository.addJobPost(jobPosting1)
-        repository.addJobPost(jobPosting2)
-        repository.addJobPost(jobPosting3)
+        repository.createJobPost(jobPosting1)
+        repository.createJobPost(jobPosting2)
+        repository.createJobPost(jobPosting3)
 
         // Try to retrieve posting using random ID, should not exist
         val invalidID = UUID.randomUUID()
@@ -94,17 +95,17 @@ class JobPostingMemRepositoryTest {
         val jobPosting2 = TestJobPostingData.jobPostingAtMicrosoft
         val jobPosting3 = TestJobPostingData.jobPostingAtContruction
 
-        repository.addJobPost(jobPosting1)
-        repository.addJobPost(jobPosting2)
-        repository.addJobPost(jobPosting3)
+        repository.createJobPost(jobPosting1)
+        repository.createJobPost(jobPosting2)
+        repository.createJobPost(jobPosting3)
 
         // Verify multiple postings exist
-        assertEquals(3, repository.getJobPostings().size)
+        assertEquals(3, repository.getJobPosts().size)
 
         repository.deleteJobPost()
 
         // Verify all postings deleted
-        assertEquals(0, repository.getJobPostings().size)
+        assertEquals(0, repository.getJobPosts().size)
     }
 
     @Test
@@ -119,7 +120,7 @@ class JobPostingMemRepositoryTest {
             startDate = LocalDate.of(2023, 12, 21)
         )
 
-        repository.addJobPost(jobPosting)
+        repository.createJobPost(jobPosting)
 
         // Verify same job posting is returned as requested
         assertEquals(jobPosting, repository.getJobPostByID(id))
@@ -143,7 +144,7 @@ class JobPostingMemRepositoryTest {
             startDate = LocalDate.of(2023, 12, 21)
         )
 
-        repository.addJobPost(jobPosting)
+        repository.createJobPost(jobPosting)
 
         // Verify company name is Google
         val response = repository.getJobPostByID(id)

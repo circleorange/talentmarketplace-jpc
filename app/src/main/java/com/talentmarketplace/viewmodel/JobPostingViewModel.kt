@@ -92,7 +92,7 @@ class JobPostingViewModel @Inject constructor(
                 payRange = payRange.value,
                 startDate = startDate.value
             )
-            repository.addJobPost(jobPost)
+            repository.createJobPost(jobPost)
             i("JobPostingViewModel.addJobPost: $jobPost")
         }
     }

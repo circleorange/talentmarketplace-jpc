@@ -1,0 +1,98 @@
+package com.talentmarketplace.repository.firestore
+
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.toObject
+import com.talentmarketplace.model.JobPostModel
+import kotlinx.coroutines.tasks.await
+import java.time.format.DateTimeFormatter
+import javax.inject.Inject
+
+class JobPostFirestoreRepository @Inject constructor(
+    private val db: FirebaseFirestore
+) {
+    private val jobPostsCollection = db.collection("jobPosts")
+
+    override suspend fun createJobPost(jobPost: JobPostModel) {
+        try {
+            /**
+            val jobPostWithDateString = jobPost.copy(
+                startDate = jobPost.startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            )**/
+            jobPostsCollection
+                .document(jobPost.id)
+                .set(jobPost)
+        }
+        catch (e: FirebaseFirestoreException) {
+            e.printStackTrace()
+        }
+    }
+
+    override suspend fun getJobPostByID(jobPostID: String): JobPostModel? {
+        return try {
+            jobPostsCollection
+                .document(jobPostID)
+                .get()
+                .await()
+                .toObject<JobPostModel>()
+        }
+        catch (e: FirebaseFirestoreException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    override suspend fun getJobPosts(): List<JobPostModel> {
+        return try {
+            jobPostsCollection
+                .get()
+                .await()
+                .documents
+                .mapNotNull { it.toObject<JobPostModel>() }
+        }
+        catch (e: FirebaseFirestoreException) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    override suspend fun deleteJobPost(jobPostID: String) {
+        try {
+            jobPostsCollection
+                .document(jobPostID)
+                .delete()
+                .await()
+        }
+        catch (e: FirebaseFirestoreException) {
+            e.printStackTrace()
+        }
+    }
+
+
+    override suspend fun updateJobPost(jobPostID: String, updatedJobPost: JobPostModel) {
+        try {
+            jobPostsCollection
+                .document(jobPostID)
+                .set(updatedJobPost)
+                .await()
+        }
+        catch (e: FirebaseFirestoreException) {
+            e.printStackTrace()
+        }
+    }
+
+    override suspend fun getJobPostsByUserID(userID: String): List<JobPostModel> {
+        return try {
+            jobPostsCollection
+                .whereEqualTo("userID", userID)
+                .get()
+                .await()
+                .documents
+                .mapNotNull { it.toObject<JobPostModel>() }
+        }
+        catch (e: FirebaseFirestoreException) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+}
