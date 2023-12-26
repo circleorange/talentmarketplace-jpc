@@ -55,7 +55,6 @@ android {
 dependencies {
     implementation("androidx.compose.ui:ui-android:1.5.4")
     implementation("androidx.room:room-ktx:2.6.1")
-    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
     val lifecycle_version = "2.6.2"
 
     implementation("androidx.core:core-ktx:1.9.0")
@@ -95,6 +94,9 @@ dependencies {
     // Firebase
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
+    implementation("com.google.firebase:firebase-firestore:24.10.0")
 }
 
 kapt {

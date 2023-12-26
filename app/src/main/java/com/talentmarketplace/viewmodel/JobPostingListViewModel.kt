@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostingModel
 import com.talentmarketplace.repository.JobPostingRepository
 import com.talentmarketplace.repository.auth.BasicAuthRepository
+import com.talentmarketplace.repository.auth.GoogleAuthRepository
+import com.talentmarketplace.utils.SignInMethodManager
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,8 +20,13 @@ import javax.inject.Inject
 @HiltViewModel
 class JobPostingListViewModel @Inject constructor(
     private val repository: JobPostingRepository,
-    private val basicAuthRepository: BasicAuthRepository
+    private val basicAuthRepository: BasicAuthRepository,
+    private val authRepository: GoogleAuthRepository,
+    private val signInMethodManager: SignInMethodManager,
 ) : ViewModel() {
+
+    private val signInMethod: String
+        get() = signInMethodManager.getSignInMethod()
 
     // Expose job posts
     private val _jobPostings = MutableStateFlow<List<JobPostingModel>>(emptyList())
@@ -28,9 +35,16 @@ class JobPostingListViewModel @Inject constructor(
     private fun getJobPosts() {
         // coroutine setup to handle async operations
         viewModelScope.launch {
-            val signedInUser = basicAuthRepository.getCurrentUser()
-            i("JobPostListViewModel.getJobPosts.userId: $signedInUser.id")
-            _jobPostings.value = repository.getJobPostsByUserID(signedInUser!!.id)
+            if (signInMethod == SignInMethodManager.BASIC) {
+                i("JobPostListViewModel.getJobPosts.signInMethod.BASIC")
+                val signedInUser = basicAuthRepository.getCurrentUser()
+                i("JobPostListViewModel.getJobPosts.userId: $signedInUser.id")
+                _jobPostings.value = repository.getJobPostsByUserID(signedInUser!!.uid)
+            }
+            else if (signInMethod == SignInMethodManager.GOOGLE) {
+                i("JobPostListViewModel.getJobPosts.signInMethod.GOOGLE")
+            }
+
         }
         i("JobPostingListViewModel.getJobPostings.value: ${_jobPostings.value}")
     }

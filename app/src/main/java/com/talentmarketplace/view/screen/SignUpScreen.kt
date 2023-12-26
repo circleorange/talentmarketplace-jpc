@@ -1,5 +1,6 @@
 package com.talentmarketplace.view.screen
 
+import androidx.activity.result.IntentSenderRequest
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -125,6 +126,12 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             HorizontalDividerComponent(text = R.string.divider_or)
+
+            WideButtonComponent(
+                onClick = {
+                },
+                label = R.string.btn_googleSignUp
+            )
 
             HorizontalDividerComponent(text = R.string.divider_haveAccount)
 

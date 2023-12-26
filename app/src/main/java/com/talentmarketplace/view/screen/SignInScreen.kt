@@ -77,7 +77,7 @@ fun SignInScreen(
         if (result.resultCode == Activity.RESULT_OK) {
             viewModel.processGoogleSignInResult(result.data)
         } else {
-            // Handle the error or cancellation
+            // TODO: Handle the error or cancellation
         }
     }
 
@@ -131,7 +131,7 @@ fun SignInScreen(
                 onClick = {
                     googleSignInIntentSender?.let { intentSender ->
                         googleSignInLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
-                        viewModel.resetGoogleSignInRequest() // Should be called here
+                        viewModel.resetGoogleSignInRequest()
                     } ?: viewModel.initiateGoogleSignIn()
                 },
                 label = R.string.btn_googleSignIn

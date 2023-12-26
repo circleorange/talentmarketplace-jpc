@@ -52,7 +52,7 @@ class GoogleAuthRepositoryImpl @Inject constructor(
             SignInResult(
                 data = user?.run {
                     UserModel(
-                        id = uid,
+                        uid,
                         firstName = null,
                         lastName = null,
                         email = email,

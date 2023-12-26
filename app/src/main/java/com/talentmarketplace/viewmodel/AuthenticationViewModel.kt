@@ -6,6 +6,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseUser
+import com.talentmarketplace.model.FirestoreUserModel
+import com.talentmarketplace.model.UserModel
 import com.talentmarketplace.model.authentication.AuthState
 import com.talentmarketplace.model.authentication.EmailErrorType
 import com.talentmarketplace.model.authentication.PasswordErrorType
@@ -13,6 +16,8 @@ import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.repository.auth.GoogleAuthRepository
 import com.talentmarketplace.repository.auth.firebase.GoogleAuthState
 import com.talentmarketplace.repository.auth.firebase.SignInResult
+import com.talentmarketplace.repository.firestore.FirestoreUserRepository
+import com.talentmarketplace.utils.SignInMethodManager
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,8 +32,16 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val basicAuthRepository: BasicAuthRepository,
-    private val googleAuthRepository: GoogleAuthRepository
+    private val googleAuthRepository: GoogleAuthRepository,
+    private val userRepository: FirestoreUserRepository,
+    private val signInMethodManager: SignInMethodManager,
 ): ViewModel() {
+
+    fun addUser(user: FirestoreUserModel) {
+        viewModelScope.launch {
+            userRepository.addUserToFirestore(user)
+        }
+    }
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState = _authState.asStateFlow()
@@ -58,6 +71,9 @@ class AuthenticationViewModel @Inject constructor(
             if (result.isSuccess) {
                 val user = result.getOrNull()!!
                 _authState.value = AuthState.Authenticated(user)
+
+                signInMethodManager.setSignInMethod(SignInMethodManager.BASIC)
+
                 _signInEvent.emit(Routes.Job.List.route)
                 i("AuthenticationViewModel.signIn.value: ${_authState.value}")
             }
@@ -97,6 +113,9 @@ class AuthenticationViewModel @Inject constructor(
             if (result.isSuccess) {
                 val user = result.getOrNull()!!
                 _authState.value = AuthState.Authenticated(user)
+
+                signInMethodManager.setSignInMethod(SignInMethodManager.BASIC)
+
                 _signUpEvent.emit(Routes.Job.List.route)
                 i("AuthenticationViewModel.signUp.success: ${_authState.value}")
             }
@@ -197,6 +216,18 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
+    // Helper to convert FirebaseUser to UserModel
+    private fun UserModel.toFirestoreUser(): FirestoreUserModel {
+        return FirestoreUserModel(
+            uid = this.uid,
+            username = this.username,
+            email = this.email,
+            profilePictureUrl = profilePictureUrl,
+            firstName = this.firstName,
+            lastName = this.lastName,
+        )
+    }
+
     fun processGoogleSignInResult(data: Intent?) {
         viewModelScope.launch {
             val result = data?.let { googleAuthRepository.signInWithIntent(it) }
@@ -210,6 +241,12 @@ class AuthenticationViewModel @Inject constructor(
             }
             _authState.value = result.data.let { AuthState.Authenticated(it) }
             i("AuthenticationViewModel.processGoogleSignInResult: ${_authState.value}")
+
+            val firebaseUser = result.data.toFirestoreUser()
+            userRepository.addUserToFirestore(firebaseUser)
+
+            signInMethodManager.setSignInMethod(SignInMethodManager.GOOGLE)
+
             _signInEvent.emit(Routes.Job.List.route)
         }
     }
@@ -220,4 +257,5 @@ class AuthenticationViewModel @Inject constructor(
             _googleSignInRequest.emit(null)
         }
     }
+
 }

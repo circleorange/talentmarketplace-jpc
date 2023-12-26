@@ -25,7 +25,7 @@
     <string name="btn_singIn">Sign In</string>
     <string name="btn_singOut">Sign Out</string>
     <string name="btn_singUp">Sign Up</string>
-    <string name="btn_gooleSignUp">Sign Up with Google</string>
+    <string name="btn_googleSignUp">Sign Up with Google</string>
     <string name="btn_googleSignIn">Sign In with Google</string>
 
     <string name="divider_or">or</string>

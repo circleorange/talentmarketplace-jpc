@@ -70,7 +70,7 @@ class JobPostingViewModel @Inject constructor(
             i("JobPostViewModel.updateJobPost.id: $jobPostID")
             val signedInUser = basicAuthRepository.getCurrentUser()
             val jobPost = JobPostingModel(
-                userID = signedInUser!!.id,
+                userID = signedInUser!!.uid,
                 companyName = companyName.value,
                 title = title.value,
                 description = description.value,
@@ -86,7 +86,7 @@ class JobPostingViewModel @Inject constructor(
             // Only valid inputs past this point
             val signedInUser = basicAuthRepository.getCurrentUser()
             val jobPost = JobPostingModel(
-                userID = signedInUser!!.id,
+                userID = signedInUser!!.uid,
                 companyName = companyName.value,
                 title = title.value,
                 description = description.value,
