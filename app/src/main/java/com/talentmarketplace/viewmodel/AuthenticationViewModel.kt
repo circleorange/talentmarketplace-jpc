@@ -1,5 +1,7 @@
 package com.talentmarketplace.viewmodel
 
+import android.content.Intent
+import android.content.IntentSender
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -7,26 +9,29 @@ import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.authentication.AuthState
 import com.talentmarketplace.model.authentication.EmailErrorType
 import com.talentmarketplace.model.authentication.PasswordErrorType
-import com.talentmarketplace.repository.auth.AuthRepository
+import com.talentmarketplace.repository.auth.BasicAuthRepository
+import com.talentmarketplace.repository.auth.GoogleAuthRepository
+import com.talentmarketplace.repository.auth.firebase.GoogleAuthState
+import com.talentmarketplace.repository.auth.firebase.SignInResult
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber.i
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val basicAuthRepository: BasicAuthRepository,
+    private val googleAuthRepository: GoogleAuthRepository
 ): ViewModel() {
 
-    // Authentication State
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
-    val authState: StateFlow<AuthState> = _authState.asStateFlow()
+    val authState = _authState.asStateFlow()
 
     val firstName = mutableStateOf("")
     val lastName = mutableStateOf("")
@@ -48,7 +53,7 @@ class AuthenticationViewModel @Inject constructor(
                 return@launch
             }
             _authState.value = AuthState.Loading
-            val result = authRepository.signIn(email, password)
+            val result = basicAuthRepository.signIn(email, password)
 
             if (result.isSuccess) {
                 val user = result.getOrNull()!!
@@ -87,7 +92,7 @@ class AuthenticationViewModel @Inject constructor(
             }
 
             _authState.value = AuthState.Loading
-            val result = authRepository.signUp(firstName, lastName, email, password)
+            val result = basicAuthRepository.signUp(firstName, lastName, email, password)
 
             if (result.isSuccess) {
                 val user = result.getOrNull()!!
@@ -167,5 +172,52 @@ class AuthenticationViewModel @Inject constructor(
             return false
         } else null
         return true
+    }
+
+    private val _googleAuthState = MutableStateFlow(GoogleAuthState())
+    val googleAuthState = _googleAuthState.asStateFlow()
+
+    fun resetState() {
+        _googleAuthState.update { GoogleAuthState() }
+    }
+
+    // This event will be observed by the UI to launch the Google Sign-In process
+    private val _googleSignInRequest = MutableSharedFlow<IntentSender?>()
+    val googleSignInRequest = _googleSignInRequest.asSharedFlow()
+
+    fun initiateGoogleSignIn() {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val intentSender = googleAuthRepository.signIn()
+                _googleSignInRequest.emit(intentSender)
+            } catch (e: Exception) {
+                _authState.value = AuthState.InvalidAuthentication
+            }
+        }
+    }
+
+    fun processGoogleSignInResult(data: Intent?) {
+        viewModelScope.launch {
+            val result = data?.let { googleAuthRepository.signInWithIntent(it) }
+            if (result == null) {
+                _authState.value = AuthState.InvalidAuthentication
+                return@launch
+            }
+            if (result.data == null) {
+                _authState.value = AuthState.InvalidAuthentication
+                return@launch
+            }
+            _authState.value = result.data.let { AuthState.Authenticated(it) }
+            i("AuthenticationViewModel.processGoogleSignInResult: ${_authState.value}")
+            _signInEvent.emit(Routes.Job.List.route)
+        }
+    }
+
+    // Call this method to reset the sign-in request event after launching
+    fun resetGoogleSignInRequest() {
+        viewModelScope.launch {
+            _googleSignInRequest.emit(null)
+        }
     }
 }

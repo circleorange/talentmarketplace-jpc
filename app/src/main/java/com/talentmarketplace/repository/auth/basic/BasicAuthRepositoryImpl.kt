@@ -1,10 +1,12 @@
-package com.talentmarketplace.repository.auth
+package com.talentmarketplace.repository.auth.basic
 
 import com.talentmarketplace.model.UserModel
+import com.talentmarketplace.repository.auth.BasicAuthRepository
 import java.lang.Exception
 import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor() : AuthRepository {
+class BasicAuthRepositoryImpl @Inject constructor() : BasicAuthRepository {
+
     private val users = mutableListOf<UserModel>()
     private var signedInUser: UserModel? = null
 
@@ -39,7 +41,9 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
             firstName = fName,
             lastName = lName,
             email = email,
-            password = password
+            password = password,
+            username = null,
+            profilePictureUrl = null,
         )
         users.add(newUser)
         signedInUser = newUser

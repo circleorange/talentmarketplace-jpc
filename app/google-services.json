@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "991196238572",
+    "project_id": "talentmarketplace-30ef9",
+    "storage_bucket": "talentmarketplace-30ef9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:991196238572:android:5a02efa4458a5911560bc9",
+        "android_client_info": {
+          "package_name": "com.talentmarketplace"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "991196238572-1i5rkbbv2tumtghtds3ggrsrqkbl6ibt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.talentmarketplace",
+            "certificate_hash": "1d9d94e0ae22165a4e4ee70f43537af1adc08637"
+          }
+        },
+        {
+          "client_id": "991196238572-votur9c8ol14n1nak6vf66shd89oafk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJyq3MbiVI_fBNCCHrrMKUnTSBuRz4xiI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "991196238572-votur9c8ol14n1nak6vf66shd89oafk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

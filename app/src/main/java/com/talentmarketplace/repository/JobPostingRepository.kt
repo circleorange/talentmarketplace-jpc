@@ -5,10 +5,10 @@ import java.util.UUID
 
 interface JobPostingRepository {
     fun addJobPosting(jobPosting: JobPostingModel)
-    fun getJobPostingByID(jobPostingID: UUID): JobPostingModel?
+    fun getJobPostingByID(jobPostingID: String): JobPostingModel?
     fun getJobPostings(): List<JobPostingModel>
-    fun deleteJobPosting(jobPostingID: UUID)
+    fun deleteJobPosting(jobPostingID: String)
     fun deleteJobPostings()
-    fun updateJobPosting(jobPostID: UUID, jobPostData: JobPostingModel)
-    fun getJobPostsByUserID(userID: UUID): List<JobPostingModel>
+    fun updateJobPosting(jobPostID: String, jobPostData: JobPostingModel)
+    fun getJobPostsByUserID(userID: String): List<JobPostingModel>
 }
