@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -53,6 +54,8 @@ android {
 
 dependencies {
     implementation("androidx.compose.ui:ui-android:1.5.4")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
     val lifecycle_version = "2.6.2"
 
     implementation("androidx.core:core-ktx:1.9.0")
@@ -88,6 +91,10 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     kapt("com.google.dagger:hilt-compiler:2.44")
+
+    // Firebase
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 }
 
 kapt {

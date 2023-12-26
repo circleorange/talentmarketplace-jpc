@@ -25,6 +25,8 @@
     <string name="btn_singIn">Sign In</string>
     <string name="btn_singOut">Sign Out</string>
     <string name="btn_singUp">Sign Up</string>
+    <string name="btn_gooleSignUp">Sign Up with Google</string>
+    <string name="btn_googleSignIn">Sign In with Google</string>
 
     <string name="divider_or">or</string>
     <string name="divider_haveAccount">Already have an account?</string>
@@ -38,4 +40,7 @@
     <string name="err_email_invalid">Invalid email address</string>
     <string name="err_password_empty">Password field cannot be empty</string>
 
+    <!-- Firebase -->
+
+    <string name="web_client_id">991196238572-votur9c8ol14n1nak6vf66shd89oafk5.apps.googleusercontent.com</string>
 </resources>
