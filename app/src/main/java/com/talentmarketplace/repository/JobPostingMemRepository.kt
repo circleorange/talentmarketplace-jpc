@@ -12,13 +12,13 @@ class JobPostingMemRepository @Inject constructor() : JobPostingRepository {
         jobPostings.add(jobPosting)
     }
 
-    override fun getJobPostingByID(jobPostingID: UUID): JobPostingModel? {
+    override fun getJobPostingByID(jobPostingID: String): JobPostingModel? {
         return jobPostings.find { it.id == jobPostingID }
     }
 
     override fun getJobPostings(): List<JobPostingModel> = jobPostings
 
-    override fun deleteJobPosting(jobPostingID: UUID) {
+    override fun deleteJobPosting(jobPostingID: String) {
         jobPostings.removeIf { it.id == jobPostingID }
     }
 
@@ -26,13 +26,13 @@ class JobPostingMemRepository @Inject constructor() : JobPostingRepository {
         jobPostings.clear()
     }
 
-    override fun updateJobPosting(jobPostID: UUID, jobPostData: JobPostingModel) {
+    override fun updateJobPosting(jobPostID: String, jobPostData: JobPostingModel) {
         val index = jobPostings.indexOfFirst { it.id == jobPostID }
         if (index == -1) { return }
         jobPostings[index] = jobPostData
     }
 
-    override fun getJobPostsByUserID(userID: UUID): List<JobPostingModel> {
+    override fun getJobPostsByUserID(userID: String): List<JobPostingModel> {
         return jobPostings.filter { it.userID == userID }
     }
 }

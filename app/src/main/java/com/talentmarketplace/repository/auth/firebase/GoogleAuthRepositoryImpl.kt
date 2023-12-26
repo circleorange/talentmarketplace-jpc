@@ -8,10 +8,10 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
+import com.talentmarketplace.model.UserModel
 import com.talentmarketplace.repository.auth.GoogleAuthRepository
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber.i
-import java.lang.Exception
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
 import javax.inject.Named
@@ -28,8 +28,8 @@ class GoogleAuthRepositoryImpl @Inject constructor(
             oneTapClient.beginSignIn(
                 buildSignInRequest()
             ).await()
-        } catch (e: Exception) {
-            i("webClientId: $webClientId")
+        }
+        catch (e: Exception) {
             i("${e.printStackTrace()}")
             // needed as otherwise can mess up coroutine cancellation
             if (e is CancellationException) throw e
@@ -42,16 +42,21 @@ class GoogleAuthRepositoryImpl @Inject constructor(
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
-        return try {
 
-            val user = auth.signInWithCredential(googleCredentials)
+        return try {
+            val user = auth
+                .signInWithCredential(googleCredentials)
                 .await()
                 .user
 
             SignInResult(
                 data = user?.run {
-                    UserData(
-                        userID = uid,
+                    UserModel(
+                        id = uid,
+                        firstName = null,
+                        lastName = null,
+                        email = email,
+                        password = null,
                         username = displayName,
                         profilePictureUrl = photoUrl?.toString()
                     )

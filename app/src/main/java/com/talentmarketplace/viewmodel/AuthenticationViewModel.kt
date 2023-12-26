@@ -201,6 +201,7 @@ class AuthenticationViewModel @Inject constructor(
             val result = data?.let { googleAuthRepository.signInWithIntent(it) }
             if (result!!.data != null) {
                 // _authState.value = AuthState.Authenticated(result.data)
+                i("AuthenticationViewModel.processGoogleSignInResult: ${result.data}")
                 _signInEvent.emit(Routes.Job.List.route)
             } else {
                 _authState.value = AuthState.InvalidAuthentication

@@ -63,7 +63,7 @@ fun JobPostingScreen(
     if (isEditMode) {
         // Get job post on list view click
         LaunchedEffect(jobPostID) {
-            jobPostID?.let { viewModel.getJobPostByID(UUID.fromString(it)) }
+            jobPostID?.let { viewModel.getJobPostByID(it) }
         }
     }
 
@@ -131,7 +131,7 @@ fun JobPostingScreen(
                     // Exit early if invalid input, no need for nested if statements
                     if (!viewModel.isValid()) return@Button
                     if (isEditMode) {
-                        viewModel.updateJobPost(UUID.fromString(jobPostID))
+                        viewModel.updateJobPost(jobPostID!!)
                     }
                     else {
                         viewModel.addJobPosting()
@@ -146,7 +146,7 @@ fun JobPostingScreen(
             Button(
                 onClick = {
                     if (isEditMode) {
-                        viewModel.deleteJobPost(UUID.fromString(jobPostID))
+                        viewModel.deleteJobPost(jobPostID!!)
                         viewModel.onJobPostRedirect()
                     }
                           },

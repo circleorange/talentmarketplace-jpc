@@ -48,7 +48,7 @@ class JobPostingViewModel @Inject constructor(
     private val _jobPostDetails = MutableStateFlow<JobPostingModel?>(null)
     val jobPostDetails = _jobPostDetails.asStateFlow()
 
-    fun getJobPostByID(id: UUID) {
+    fun getJobPostByID(id: String) {
         viewModelScope.launch {
             repository.getJobPostingByID(id)?.let { jobPost ->
                 companyName.value = jobPost.companyName
@@ -60,12 +60,12 @@ class JobPostingViewModel @Inject constructor(
         }
     }
 
-    fun deleteJobPost(jobPostID: UUID) {
+    fun deleteJobPost(jobPostID: String) {
         i("JobPostViewModel.deleteJobPost.id: $jobPostID")
         repository.deleteJobPosting(jobPostID)
     }
 
-    fun updateJobPost(jobPostID: UUID) {
+    fun updateJobPost(jobPostID: String) {
         viewModelScope.launch {
             i("JobPostViewModel.updateJobPost.id: $jobPostID")
             val signedInUser = basicAuthRepository.getCurrentUser()

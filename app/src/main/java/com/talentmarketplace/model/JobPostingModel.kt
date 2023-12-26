@@ -4,8 +4,8 @@ import java.time.LocalDate
 import java.util.UUID
 
 data class JobPostingModel(
-    val id: UUID = UUID.randomUUID(),
-    val userID: UUID,
+    val id: String = UUID.randomUUID().toString(),
+    val userID: String,
     var companyName : String,
     var title : String,
     var description : String,

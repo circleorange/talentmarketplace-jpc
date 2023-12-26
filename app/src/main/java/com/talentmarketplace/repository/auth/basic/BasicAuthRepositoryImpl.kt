@@ -41,7 +41,9 @@ class BasicAuthRepositoryImpl @Inject constructor() : BasicAuthRepository {
             firstName = fName,
             lastName = lName,
             email = email,
-            password = password
+            password = password,
+            username = null,
+            profilePictureUrl = null,
         )
         users.add(newUser)
         signedInUser = newUser
