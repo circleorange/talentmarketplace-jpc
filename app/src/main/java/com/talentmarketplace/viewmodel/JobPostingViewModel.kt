@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostingModel
 import com.talentmarketplace.repository.JobPostingRepository
-import com.talentmarketplace.repository.auth.AuthRepository
+import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class JobPostingViewModel @Inject constructor(
     private val repository: JobPostingRepository,
-    private val authRepository: AuthRepository
+    private val basicAuthRepository: BasicAuthRepository
 ) : ViewModel() {
 
     var companyName = mutableStateOf("")
@@ -68,7 +68,7 @@ class JobPostingViewModel @Inject constructor(
     fun updateJobPost(jobPostID: UUID) {
         viewModelScope.launch {
             i("JobPostViewModel.updateJobPost.id: $jobPostID")
-            val signedInUser = authRepository.getCurrentUser()
+            val signedInUser = basicAuthRepository.getCurrentUser()
             val jobPost = JobPostingModel(
                 userID = signedInUser!!.id,
                 companyName = companyName.value,
@@ -84,7 +84,7 @@ class JobPostingViewModel @Inject constructor(
     fun addJobPosting() {
         viewModelScope.launch {
             // Only valid inputs past this point
-            val signedInUser = authRepository.getCurrentUser()
+            val signedInUser = basicAuthRepository.getCurrentUser()
             val jobPost = JobPostingModel(
                 userID = signedInUser!!.id,
                 companyName = companyName.value,

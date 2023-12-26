@@ -6,6 +6,7 @@ sealed class Routes(val route: String) {
         object SignUp : Auth("auth/signUp")
         object SignIn : Auth("auth/signIn")
         object SignOut : Auth("auth/signOut")
+        object GoogleSignIn : Auth("auth/googleSignIn")
     }
 
     sealed class Job(route: String): Routes(route) {

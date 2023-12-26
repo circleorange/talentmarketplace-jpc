@@ -1,5 +1,10 @@
 package com.talentmarketplace.view.screen
 
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +15,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.talentmarketplace.R
+import com.talentmarketplace.repository.auth.firebase.GoogleAuthState
 import com.talentmarketplace.view.component.HeaderLabelComponent
 import com.talentmarketplace.view.component.HorizontalDividerComponent
 import com.talentmarketplace.view.component.StandardTextField
@@ -28,7 +35,7 @@ import com.talentmarketplace.viewmodel.AuthenticationViewModel
 
 @Composable
 fun SignInScreen(
-    viewModel: AuthenticationViewModel = hiltViewModel()
+    viewModel: AuthenticationViewModel = hiltViewModel(),
 ) {
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -47,6 +54,38 @@ fun SignInScreen(
     LaunchedEffect(viewModel) {
         viewModel.signUpEvent.collect {
                 route -> navController.navigate(route)
+        }
+    }
+
+    /**
+    val state by viewModel.googleAuthState
+    LaunchedEffect(state.signInError) {
+        state.signInError?.let { error ->
+            Toast.makeText(
+                context,
+                error,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+    **/
+
+    // Prepare the launcher for the Google Sign-In intent
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            viewModel.processGoogleSignInResult(result.data)
+        } else {
+            // Handle the error or cancellation
+        }
+    }
+
+    val googleSignInIntentSender by viewModel.googleSignInRequest.collectAsState(initial = null)
+    LaunchedEffect(googleSignInIntentSender) {
+        googleSignInIntentSender?.let { intentSender ->
+            googleSignInLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+            viewModel.resetGoogleSignInRequest()
         }
     }
 
@@ -87,9 +126,19 @@ fun SignInScreen(
             HorizontalDividerComponent(
                 text = R.string.divider_or
             )
+
+            WideButtonComponent(
+                onClick = {
+                    googleSignInIntentSender?.let { intentSender ->
+                        googleSignInLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+                        viewModel.resetGoogleSignInRequest() // Should be called here
+                    } ?: viewModel.initiateGoogleSignIn()
+                },
+                label = R.string.btn_googleSignIn
+            )
             
             HorizontalDividerComponent(
-                text = R.string.divider_noAccount
+                text = R.string.divider_noAccount,
             )
             
             WideButtonComponent(
