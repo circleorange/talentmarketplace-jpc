@@ -12,6 +12,7 @@ import com.talentmarketplace.model.authentication.PasswordErrorType
 import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.repository.auth.GoogleAuthRepository
 import com.talentmarketplace.repository.auth.firebase.GoogleAuthState
+import com.talentmarketplace.repository.auth.firebase.SignInResult
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -199,16 +200,17 @@ class AuthenticationViewModel @Inject constructor(
     fun processGoogleSignInResult(data: Intent?) {
         viewModelScope.launch {
             val result = data?.let { googleAuthRepository.signInWithIntent(it) }
-            if (result!!.data != null) {
-                // _authState.value = AuthState.Authenticated(result.data)
-                i("AuthenticationViewModel.processGoogleSignInResult: ${result.data}")
-                _signInEvent.emit(Routes.Job.List.route)
-            } else {
+            if (result == null) {
                 _authState.value = AuthState.InvalidAuthentication
-                if (result != null) {
-                    _googleAuthState.update { it.copy(signInError = result.errorMessage) }
-                }
+                return@launch
             }
+            if (result.data == null) {
+                _authState.value = AuthState.InvalidAuthentication
+                return@launch
+            }
+            _authState.value = result.data.let { AuthState.Authenticated(it) }
+            i("AuthenticationViewModel.processGoogleSignInResult: ${_authState.value}")
+            _signInEvent.emit(Routes.Job.List.route)
         }
     }
 

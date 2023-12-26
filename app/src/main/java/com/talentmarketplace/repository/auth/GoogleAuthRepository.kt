@@ -2,7 +2,6 @@ package com.talentmarketplace.repository.auth
 
 import android.content.Intent
 import android.content.IntentSender
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.talentmarketplace.repository.auth.firebase.SignInResult
 import com.talentmarketplace.repository.auth.firebase.UserData
 
