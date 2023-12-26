@@ -9,12 +9,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.talentmarketplace.R
 import com.talentmarketplace.view.component.WideButtonComponent
 import com.talentmarketplace.view.navigation.LocalNavController
-import com.talentmarketplace.view.navigation.Routes
 import com.talentmarketplace.viewmodel.AuthenticationViewModel
 
 @Composable
@@ -38,7 +36,7 @@ fun SettingsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             WideButtonComponent(
-                onClick = { viewModel.signOut() },
+                onClick = { viewModel.onSignOutButtonPress() },
                 label = R.string.btn_singOut
             )
         }

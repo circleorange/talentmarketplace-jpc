@@ -4,6 +4,8 @@ import android.content.Intent
 import android.content.IntentSender
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.FirestoreUserModel
@@ -82,9 +84,26 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
+    fun onSuccessfulSignUp() {
+        viewModelScope.launch {
+            _signUpEvent.emit(Routes.Job.List.route)
+        }
+    }
+
+
+    private val _signUpResult = MutableLiveData<Result<UserModel>>()
+    val signUpResult: LiveData<Result<UserModel>> = _signUpResult
+    fun onSignUp(email: String, password: String) {
+        viewModelScope.launch {
+            _signUpResult.value = userRepository.signUp(email, password)
+            signInMethodManager.setSignInMethod(SignInMethodManager.BASIC)
+            i("AuthViewModel.onSignUp.result: ${_signUpResult.value}")
+        }
+    }
+
     private val _signUpEvent = MutableSharedFlow<String>()
     val signUpEvent = _signUpEvent.asSharedFlow()
-    fun signUp(firstName: String, lastName: String, email: String, password: String) {
+    fun onSignUpButtonPress(firstName: String, lastName: String, email: String, password: String) {
         viewModelScope.launch {
 
             // Validate all Sign Up Fields
@@ -118,7 +137,7 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    fun signUp() {
+    fun onSignUpButtonPress() {
         viewModelScope.launch {
             _signUpEvent.emit(Routes.Auth.SignUp.route)
         }
@@ -126,7 +145,7 @@ class AuthenticationViewModel @Inject constructor(
 
     private val _signOutEvent = MutableSharedFlow<String>()
     val signOutEvent = _signOutEvent.asSharedFlow()
-    fun signOut() {
+    fun onSignOutButtonPress() {
         viewModelScope.launch {
             _signOutEvent.emit(Routes.Auth.SignIn.route)
         }

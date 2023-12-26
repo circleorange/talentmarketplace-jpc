@@ -1,6 +1,5 @@
 package com.talentmarketplace.view.screen
 
-import androidx.activity.result.IntentSenderRequest
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,10 +7,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -69,6 +73,24 @@ fun SignUpScreen(
         }
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val signUpResult by viewModel.signUpResult.observeAsState()
+    signUpResult?.let { result ->
+        when{
+            result.isSuccess -> {
+                viewModel.onSuccessfulSignUp()
+            }
+            result.isFailure -> {
+                LaunchedEffect(result.exceptionOrNull()) {
+                    snackbarHostState.showSnackbar(
+                        message = signUpResult.toString(),
+                        duration = SnackbarDuration.Long
+                    )
+                }
+            }
+        }
+    }
+
     Surface(
         color = Color.White,
         modifier = Modifier.fillMaxSize()
@@ -116,9 +138,12 @@ fun SignUpScreen(
                 hideInput = PasswordVisualTransformation()
             )
 
+
+            SnackbarHost(hostState = snackbarHostState)
+
             WideButtonComponent(
                 onClick = {
-                    viewModel.signUp(firstName, lastName, email, password)
+                    viewModel.onSignUp(email, password)
                 },
                 label = R.string.btn_singUp
             )

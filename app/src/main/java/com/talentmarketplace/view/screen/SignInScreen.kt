@@ -1,7 +1,6 @@
 package com.talentmarketplace.view.screen
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.talentmarketplace.R
-import com.talentmarketplace.repository.auth.firebase.GoogleAuthState
 import com.talentmarketplace.view.component.HeaderLabelComponent
 import com.talentmarketplace.view.component.HorizontalDividerComponent
 import com.talentmarketplace.view.component.StandardTextField
@@ -142,7 +140,7 @@ fun SignInScreen(
             )
             
             WideButtonComponent(
-                onClick = { viewModel.signUp() },
+                onClick = { viewModel.onSignUpButtonPress() },
                 label = R.string.btn_singUp
             )
         }

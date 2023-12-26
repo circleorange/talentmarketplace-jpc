@@ -61,7 +61,9 @@ class JobPostingViewModel @Inject constructor(
 
     fun deleteJobPost(jobPostID: String) {
         i("JobPostViewModel.deleteJobPost.id: $jobPostID")
-        repository.deleteJobPost(jobPostID)
+        viewModelScope.launch {
+            repository.deleteJobPost(jobPostID)
+        }
     }
 
     fun updateJobPost(jobPostID: String) {

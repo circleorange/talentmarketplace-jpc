@@ -19,10 +19,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JobPostingListViewModel @Inject constructor(
-    private val repository: JobPostRepository,
+    private val jobRepository: JobPostRepository,
     private val basicAuthRepository: BasicAuthRepository,
     private val signInMethodManager: SignInMethodManager,
-    private val userFirestoreRepository: UserFirestoreRepository,
+    private val userRepository: UserFirestoreRepository,
 ) : ViewModel() {
 
     private val signInMethod: String
@@ -32,19 +32,27 @@ class JobPostingListViewModel @Inject constructor(
     private val _jobPosts = MutableStateFlow<List<JobPostModel>>(emptyList())
     val jobPostings = _jobPosts.asStateFlow()
 
-    private fun getJobPosts() {
+    fun getJobPosts() {
+        viewModelScope.launch {
+            val currentUser = userRepository.getCurrentUser()!!
+            _jobPosts.value = jobRepository.getJobPostsByUserID(currentUser.uid)
+        }
+    }
+
+
+    private fun getJobPosts2() {
         // coroutine setup to handle async operations
         viewModelScope.launch {
             if (signInMethod == SignInMethodManager.BASIC) {
                 i("JobPostListViewModel.getJobPosts.signInMethod.BASIC")
                 val signedInUser = basicAuthRepository.getCurrentUser()
                 i("JobPostListViewModel.getJobPosts.userId: $signedInUser.id")
-                _jobPosts.value = repository.getJobPostsByUserID(signedInUser!!.uid)
+                _jobPosts.value = jobRepository.getJobPostsByUserID(signedInUser!!.uid)
             }
             else if (signInMethod == SignInMethodManager.GOOGLE) {
                 i("JobPostListViewModel.getJobPosts.signInMethod.GOOGLE")
-                val currentUserID = userFirestoreRepository.getCurrentUser()!!.uid
-                _jobPosts.value = repository.getJobPostsByUserID(currentUserID)
+                val currentUserID = userRepository.getCurrentUser()!!.uid
+                _jobPosts.value = jobRepository.getJobPostsByUserID(currentUserID)
             }
 
         }
