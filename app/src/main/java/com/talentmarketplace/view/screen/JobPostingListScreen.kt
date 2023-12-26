@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.talentmarketplace.viewmodel.JobPostingListViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.talentmarketplace.model.JobPostingModel
+import com.talentmarketplace.model.JobPostModel
 import com.talentmarketplace.view.navigation.LocalNavController
 import timber.log.Timber.i
 
@@ -49,7 +49,7 @@ fun JobPostingListScreen(
 
 // Layout for single list item
 @Composable
-fun JobPostingItem(jobPosting: JobPostingModel, onClick: () -> Unit) {
+fun JobPostingItem(jobPosting: JobPostModel, onClick: () -> Unit) {
     i("JobPostingListScreen.JobPostingItem.param: $jobPosting")
     ElevatedCard(
         modifier = Modifier

@@ -3,8 +3,8 @@ package com.talentmarketplace.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.talentmarketplace.model.JobPostingModel
-import com.talentmarketplace.repository.JobPostingRepository
+import com.talentmarketplace.model.JobPostModel
+import com.talentmarketplace.repository.JobPostRepository
 import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,12 +15,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber.i
 import java.time.LocalDate
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class JobPostingViewModel @Inject constructor(
-    private val repository: JobPostingRepository,
+    private val repository: JobPostRepository,
     private val basicAuthRepository: BasicAuthRepository
 ) : ViewModel() {
 
@@ -45,12 +44,12 @@ class JobPostingViewModel @Inject constructor(
     }
 
     // Expose job post details for composable
-    private val _jobPostDetails = MutableStateFlow<JobPostingModel?>(null)
+    private val _jobPostDetails = MutableStateFlow<JobPostModel?>(null)
     val jobPostDetails = _jobPostDetails.asStateFlow()
 
     fun getJobPostByID(id: String) {
         viewModelScope.launch {
-            repository.getJobPostingByID(id)?.let { jobPost ->
+            repository.getJobPostByID(id)?.let { jobPost ->
                 companyName.value = jobPost.companyName
                 title.value = jobPost.title
                 description.value = jobPost.description
@@ -62,14 +61,14 @@ class JobPostingViewModel @Inject constructor(
 
     fun deleteJobPost(jobPostID: String) {
         i("JobPostViewModel.deleteJobPost.id: $jobPostID")
-        repository.deleteJobPosting(jobPostID)
+        repository.deleteJobPost(jobPostID)
     }
 
     fun updateJobPost(jobPostID: String) {
         viewModelScope.launch {
             i("JobPostViewModel.updateJobPost.id: $jobPostID")
             val signedInUser = basicAuthRepository.getCurrentUser()
-            val jobPost = JobPostingModel(
+            val jobPost = JobPostModel(
                 userID = signedInUser!!.uid,
                 companyName = companyName.value,
                 title = title.value,
@@ -77,7 +76,7 @@ class JobPostingViewModel @Inject constructor(
                 payRange = payRange.value,
                 startDate = startDate.value
             )
-            repository.updateJobPosting(jobPostID, jobPost)
+            repository.updateJobPost(jobPostID, jobPost)
         }
     }
 
@@ -85,7 +84,7 @@ class JobPostingViewModel @Inject constructor(
         viewModelScope.launch {
             // Only valid inputs past this point
             val signedInUser = basicAuthRepository.getCurrentUser()
-            val jobPost = JobPostingModel(
+            val jobPost = JobPostModel(
                 userID = signedInUser!!.uid,
                 companyName = companyName.value,
                 title = title.value,
@@ -93,7 +92,7 @@ class JobPostingViewModel @Inject constructor(
                 payRange = payRange.value,
                 startDate = startDate.value
             )
-            repository.addJobPosting(jobPost)
+            repository.addJobPost(jobPost)
             i("JobPostingViewModel.addJobPost: $jobPost")
         }
     }

@@ -2,8 +2,8 @@ package com.talentmarketplace.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.talentmarketplace.model.JobPostingModel
-import com.talentmarketplace.repository.JobPostingRepository
+import com.talentmarketplace.model.JobPostModel
+import com.talentmarketplace.repository.JobPostRepository
 import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.repository.auth.GoogleAuthRepository
 import com.talentmarketplace.utils.SignInMethodManager
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JobPostingListViewModel @Inject constructor(
-    private val repository: JobPostingRepository,
+    private val repository: JobPostRepository,
     private val basicAuthRepository: BasicAuthRepository,
     private val authRepository: GoogleAuthRepository,
     private val signInMethodManager: SignInMethodManager,
@@ -29,7 +29,7 @@ class JobPostingListViewModel @Inject constructor(
         get() = signInMethodManager.getSignInMethod()
 
     // Expose job posts
-    private val _jobPostings = MutableStateFlow<List<JobPostingModel>>(emptyList())
+    private val _jobPostings = MutableStateFlow<List<JobPostModel>>(emptyList())
     val jobPostings = _jobPostings.asStateFlow()
 
     private fun getJobPosts() {

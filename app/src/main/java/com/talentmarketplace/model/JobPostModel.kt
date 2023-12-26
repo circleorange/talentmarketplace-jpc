@@ -3,7 +3,7 @@ package com.talentmarketplace.model
 import java.time.LocalDate
 import java.util.UUID
 
-data class JobPostingModel(
+data class JobPostModel(
     val id: String = UUID.randomUUID().toString(),
     val userID: String,
     var companyName : String,
