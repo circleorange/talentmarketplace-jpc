@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -143,6 +145,15 @@ fun JobPostScreen(
                 Spacer(modifier = Modifier.width(width = 4.dp))
                 Text(stringResource(id = R.string.button_addJobPosting))
             }
+            
+            Spacer(
+                modifier = Modifier.width(16.dp),
+            )
+
+            Divider(
+                thickness = 4.dp,
+            )
+            
             Button(
                 onClick = {
                     if (isEditMode) {
@@ -151,7 +162,7 @@ fun JobPostScreen(
                     }
                           },
                 elevation = ButtonDefaults.buttonElevation(20.dp) ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
+                Icon(Icons.Default.Delete, contentDescription = "Add")
                 Spacer(modifier = Modifier.width(width = 4.dp))
                 Text(stringResource(id = R.string.button_deleteJobPost))
             }
