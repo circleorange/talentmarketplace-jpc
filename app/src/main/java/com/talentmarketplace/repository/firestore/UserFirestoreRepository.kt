@@ -29,6 +29,18 @@ class UserFirestoreRepository @Inject constructor(
         }
     }
 
+    override suspend fun updateUser(user: UserModel) {
+        try {
+            usersCollection
+                .document(user.uid)
+                .set(user)
+                .await()
+        }
+        catch (e: FirebaseFirestoreException) {
+            e.printStackTrace()
+        }
+    }
+
     override suspend fun getCurrentUser(): UserModel? {
         val currentUser = firebaseAuth.currentUser ?: return null
 

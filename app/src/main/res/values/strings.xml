@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Talent Marketplace</string>
 
-    <!-- Job Post -->
+    <string name="err_generic">Error loading data</string>
+
+    <!-- Job -->
 
     <string name="button_addJobPosting">Add Position</string>
     <string name="button_deleteJobPost">Delete Position</string>
@@ -14,6 +16,7 @@
     <string name="err_CompanyName">Company Name cannot be empty</string>
 
     <!-- Authentication -->>
+
     <string name="auth_signUp">Create an Account</string>
     <string name="auth_signIn">Welcome Back</string>
 
@@ -43,4 +46,14 @@
     <!-- Firebase -->
 
     <string name="web_client_id">991196238572-votur9c8ol14n1nak6vf66shd89oafk5.apps.googleusercontent.com</string>
+
+    <!-- User -->
+
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="label_firstname">First Name</string>
+    <string name="label_lastname">Last Name</string>
+    <string name="label_profile">Welcome to My Profile</string>
+
+    <string name="btn_save">Save</string>
 </resources>
