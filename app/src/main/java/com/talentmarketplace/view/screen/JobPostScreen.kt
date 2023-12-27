@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -141,19 +143,31 @@ fun JobPostScreen(
                 elevation = ButtonDefaults.buttonElevation(20.dp) ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
                 Spacer(modifier = Modifier.width(width = 4.dp))
-                Text(stringResource(id = R.string.button_addJobPosting))
+                Text(
+                    text = if (isEditMode) {
+                        stringResource(R.string.btn_save)
+                    } else {
+                        stringResource(R.string.button_addJobPosting)
+                    }
+                )
             }
-            Button(
-                onClick = {
-                    if (isEditMode) {
+            
+            Spacer(
+                modifier = Modifier.width(16.dp),
+            )
+
+            if (isEditMode) {
+                Button(
+                    onClick = {
                         viewModel.deleteJobPost(jobPostID!!)
                         viewModel.onJobPostRedirect()
-                    }
-                          },
-                elevation = ButtonDefaults.buttonElevation(20.dp) ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-                Spacer(modifier = Modifier.width(width = 4.dp))
-                Text(stringResource(id = R.string.button_deleteJobPost))
+                    },
+                    elevation = ButtonDefaults.buttonElevation(20.dp)
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = "Add")
+                    Spacer(modifier = Modifier.width(width = 4.dp))
+                    Text(stringResource(id = R.string.button_deleteJobPost))
+                }
             }
         }
     }

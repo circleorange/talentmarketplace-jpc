@@ -56,7 +56,6 @@ class GoogleAuthRepositoryImpl @Inject constructor(
                         firstName = null,
                         lastName = null,
                         email = email!!,
-                        password = null,
                         username = displayName,
                         profilePictureUrl = photoUrl?.toString()
                     )

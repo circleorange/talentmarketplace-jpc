@@ -98,6 +98,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
     implementation("com.google.firebase:firebase-firestore:24.10.0")
+
+    // Handling Images
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }
 
 kapt {

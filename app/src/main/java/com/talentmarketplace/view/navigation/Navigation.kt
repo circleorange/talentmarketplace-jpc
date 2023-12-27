@@ -33,10 +33,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.talentmarketplace.view.component.ToolBar
+import com.talentmarketplace.view.screen.ProfileScreen
 import com.talentmarketplace.view.screen.SettingsScreen
 import com.talentmarketplace.view.screen.SignInScreen
 import com.talentmarketplace.view.screen.SignUpScreen
+import okhttp3.Route
 
 data class BottomNavigationItem(
     val label: String,
@@ -56,14 +59,30 @@ fun MainScreen() {
 
     CompositionLocalProvider(LocalNavController provides navController) {
         Scaffold (
-            topBar = { ToolBar() },
-            bottomBar = { NavigationBar(navController) } ) {
+            topBar = {
+                ToolBar()
+                     },
+            bottomBar = {
+                // Do not show bottomBar during SignUp or SignIn
+                val currentRoute = navController
+                    .currentBackStackEntryAsState()
+                    .value?.destination?.route
+
+                if (
+                    currentRoute != Routes.Auth.SignUp.route
+                    && currentRoute != Routes.Auth.SignIn.route
+                ) {
+                    NavigationBar (navController)
+                }
+            }
+        ) {
             innerPadding -> NavHost(
                 navController,
                 startDestination = Routes.Auth.SignIn.route,
                 Modifier.padding(innerPadding)
             ) {
                 composable(Routes.User.Settings.route) { SettingsScreen() }
+                composable(Routes.User.Profile.route) { ProfileScreen() }
                 composable(Routes.Auth.SignUp.route) { SignUpScreen() }
                 composable(Routes.Auth.SignOut.route) { SignInScreen() }
                 composable(Routes.Auth.SignIn.route) { SignInScreen() }
@@ -128,19 +147,14 @@ fun NavigationBar(navController: NavController) {
                 },
                 label = { Text(text = item.label) },
                 icon = {
-                    BadgedBox(badge = {
-                        if (item.badgeCount != null) {
-                            Badge {  Text(text = item.badgeCount.toString()) }
+                    Icon(
+                        // depends whether icon selected
+                        imageVector = if (index == selectedItemIndex) {
+                            item.selectedIcon
                         }
-                    } ) {
-                        Icon(
-                            // depends whether icon selected
-                            imageVector = if (index == selectedItemIndex) {
-                                item.selectedIcon
-                            }
-                            else item.unselectedIcon,
-                            contentDescription = item.label )
-                    }
+                        else item.unselectedIcon,
+                        contentDescription = item.label
+                    )
                 }
             )
         }
