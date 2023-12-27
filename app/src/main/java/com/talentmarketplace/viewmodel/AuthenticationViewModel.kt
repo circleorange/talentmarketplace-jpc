@@ -4,15 +4,20 @@ import android.content.Intent
 import android.content.IntentSender
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.talentmarketplace.model.FirestoreUserModel
+import com.talentmarketplace.model.UserModel
 import com.talentmarketplace.model.authentication.AuthState
 import com.talentmarketplace.model.authentication.EmailErrorType
 import com.talentmarketplace.model.authentication.PasswordErrorType
 import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.repository.auth.GoogleAuthRepository
 import com.talentmarketplace.repository.auth.firebase.GoogleAuthState
-import com.talentmarketplace.repository.auth.firebase.SignInResult
+import com.talentmarketplace.repository.firestore.UserFirestoreRepository
+import com.talentmarketplace.utils.SignInMethodManager
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,7 +32,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val basicAuthRepository: BasicAuthRepository,
-    private val googleAuthRepository: GoogleAuthRepository
+    private val googleAuthRepository: GoogleAuthRepository,
+    private val userRepository: UserFirestoreRepository,
+    private val signInMethodManager: SignInMethodManager,
 ): ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
@@ -37,6 +44,37 @@ class AuthenticationViewModel @Inject constructor(
     val lastName = mutableStateOf("")
     val email = mutableStateOf("")
     val password = mutableStateOf("")
+
+    fun signIn() {
+        viewModelScope.launch {
+            _signInEvent.emit(Routes.Auth.SignIn.route)
+        }
+    }
+
+    private val _signUpResult = MutableLiveData<Result<UserModel>>()
+    val signUpResult: LiveData<Result<UserModel>> = _signUpResult
+    fun onSignUp(email: String, password: String) {
+        viewModelScope.launch {
+            _signUpResult.value = userRepository.signUp(email, password)
+            signInMethodManager.setSignInMethod(SignInMethodManager.BASIC)
+            i("AuthViewModel.onSignUp.result: ${_signUpResult.value}")
+        }
+    }
+    fun onSuccessfulAuthentication() {
+        viewModelScope.launch {
+            _signUpEvent.emit(Routes.Job.List.route)
+        }
+    }
+
+    private val _signInResult = MutableLiveData<Result<UserModel>>()
+    val signInResult: LiveData<Result<UserModel>> = _signInResult
+    fun onSignIn(email:String, password: String) {
+        viewModelScope.launch {
+            _signInResult.value = userRepository.signIn(email, password)
+            i("AuthViewModel.onSignIn.result: ${_signInResult.value}")
+        }
+    }
+
 
     private val _signInEvent = MutableSharedFlow<String>()
     val signInEvent = _signInEvent.asSharedFlow()
@@ -58,6 +96,9 @@ class AuthenticationViewModel @Inject constructor(
             if (result.isSuccess) {
                 val user = result.getOrNull()!!
                 _authState.value = AuthState.Authenticated(user)
+
+                signInMethodManager.setSignInMethod(SignInMethodManager.BASIC)
+
                 _signInEvent.emit(Routes.Job.List.route)
                 i("AuthenticationViewModel.signIn.value: ${_authState.value}")
             }
@@ -68,15 +109,12 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    fun signIn() {
-        viewModelScope.launch {
-            _signInEvent.emit(Routes.Auth.SignIn.route)
-        }
-    }
+
+
 
     private val _signUpEvent = MutableSharedFlow<String>()
     val signUpEvent = _signUpEvent.asSharedFlow()
-    fun signUp(firstName: String, lastName: String, email: String, password: String) {
+    fun onSignUpButtonPress(firstName: String, lastName: String, email: String, password: String) {
         viewModelScope.launch {
 
             // Validate all Sign Up Fields
@@ -97,6 +135,9 @@ class AuthenticationViewModel @Inject constructor(
             if (result.isSuccess) {
                 val user = result.getOrNull()!!
                 _authState.value = AuthState.Authenticated(user)
+
+                signInMethodManager.setSignInMethod(SignInMethodManager.BASIC)
+
                 _signUpEvent.emit(Routes.Job.List.route)
                 i("AuthenticationViewModel.signUp.success: ${_authState.value}")
             }
@@ -107,7 +148,7 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    fun signUp() {
+    fun onSignUpButtonPress() {
         viewModelScope.launch {
             _signUpEvent.emit(Routes.Auth.SignUp.route)
         }
@@ -115,7 +156,7 @@ class AuthenticationViewModel @Inject constructor(
 
     private val _signOutEvent = MutableSharedFlow<String>()
     val signOutEvent = _signOutEvent.asSharedFlow()
-    fun signOut() {
+    fun onSignOutButtonPress() {
         viewModelScope.launch {
             _signOutEvent.emit(Routes.Auth.SignIn.route)
         }
@@ -197,6 +238,18 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
+    // Helper to convert FirebaseUser to UserModel
+    private fun UserModel.toFirestoreUser(): FirestoreUserModel {
+        return FirestoreUserModel(
+            uid = this.uid,
+            username = this.username,
+            email = this.email,
+            profilePictureUrl = profilePictureUrl,
+            firstName = this.firstName,
+            lastName = this.lastName,
+        )
+    }
+
     fun processGoogleSignInResult(data: Intent?) {
         viewModelScope.launch {
             val result = data?.let { googleAuthRepository.signInWithIntent(it) }
@@ -210,6 +263,13 @@ class AuthenticationViewModel @Inject constructor(
             }
             _authState.value = result.data.let { AuthState.Authenticated(it) }
             i("AuthenticationViewModel.processGoogleSignInResult: ${_authState.value}")
+
+            // val firebaseUser = result.data.toFirestoreUser()
+            // userRepository.createUser(firebaseUser)
+            userRepository.createUser(result.data)
+
+            signInMethodManager.setSignInMethod(SignInMethodManager.GOOGLE)
+
             _signInEvent.emit(Routes.Job.List.route)
         }
     }
@@ -220,4 +280,5 @@ class AuthenticationViewModel @Inject constructor(
             _googleSignInRequest.emit(null)
         }
     }
+
 }
