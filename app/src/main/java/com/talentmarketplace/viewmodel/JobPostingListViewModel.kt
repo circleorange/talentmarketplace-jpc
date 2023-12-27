@@ -2,9 +2,11 @@ package com.talentmarketplace.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.talentmarketplace.model.JobPostingModel
-import com.talentmarketplace.repository.JobPostingRepository
+import com.talentmarketplace.model.JobPostModel
+import com.talentmarketplace.repository.JobPostRepository
 import com.talentmarketplace.repository.auth.BasicAuthRepository
+import com.talentmarketplace.repository.firestore.UserFirestoreRepository
+import com.talentmarketplace.utils.SignInMethodManager
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,22 +19,45 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JobPostingListViewModel @Inject constructor(
-    private val repository: JobPostingRepository,
-    private val basicAuthRepository: BasicAuthRepository
+    private val jobRepository: JobPostRepository,
+    private val basicAuthRepository: BasicAuthRepository,
+    private val signInMethodManager: SignInMethodManager,
+    private val userRepository: UserFirestoreRepository,
 ) : ViewModel() {
 
-    // Expose job posts
-    private val _jobPostings = MutableStateFlow<List<JobPostingModel>>(emptyList())
-    val jobPostings = _jobPostings.asStateFlow()
+    private val signInMethod: String
+        get() = signInMethodManager.getSignInMethod()
 
-    private fun getJobPosts() {
+    // Expose job posts
+    private val _jobPosts = MutableStateFlow<List<JobPostModel>>(emptyList())
+    val jobPostings = _jobPosts.asStateFlow()
+
+    fun getJobPosts() {
+        viewModelScope.launch {
+            i("JobPostListViewModel.getJobPosts")
+            val currentUser = userRepository.getCurrentUser()!!
+            _jobPosts.value = jobRepository.getJobPostsByUserID(currentUser.uid)
+        }
+    }
+
+
+    private fun getJobPosts2() {
         // coroutine setup to handle async operations
         viewModelScope.launch {
-            val signedInUser = basicAuthRepository.getCurrentUser()
-            i("JobPostListViewModel.getJobPosts.userId: $signedInUser.id")
-            _jobPostings.value = repository.getJobPostsByUserID(signedInUser!!.id)
+            if (signInMethod == SignInMethodManager.BASIC) {
+                i("JobPostListViewModel.getJobPosts.signInMethod.BASIC")
+                val signedInUser = basicAuthRepository.getCurrentUser()
+                i("JobPostListViewModel.getJobPosts.userId: $signedInUser.id")
+                _jobPosts.value = jobRepository.getJobPostsByUserID(signedInUser!!.uid)
+            }
+            else if (signInMethod == SignInMethodManager.GOOGLE) {
+                i("JobPostListViewModel.getJobPosts.signInMethod.GOOGLE")
+                val currentUserID = userRepository.getCurrentUser()!!.uid
+                _jobPosts.value = jobRepository.getJobPostsByUserID(currentUserID)
+            }
+
         }
-        i("JobPostingListViewModel.getJobPostings.value: ${_jobPostings.value}")
+        i("JobPostingListViewModel.getJobPosts.items: ${_jobPosts.value}")
     }
 
     // Expose SharedFlow to emit navigation route

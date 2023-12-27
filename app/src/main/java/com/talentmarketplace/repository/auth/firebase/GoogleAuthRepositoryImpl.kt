@@ -52,10 +52,10 @@ class GoogleAuthRepositoryImpl @Inject constructor(
             SignInResult(
                 data = user?.run {
                     UserModel(
-                        id = uid,
+                        uid,
                         firstName = null,
                         lastName = null,
-                        email = email,
+                        email = email!!,
                         password = null,
                         username = displayName,
                         profilePictureUrl = photoUrl?.toString()
@@ -76,8 +76,8 @@ class GoogleAuthRepositoryImpl @Inject constructor(
 
     override fun getSignedInUser(): UserData? = auth.currentUser?.run {
         UserData(
-            userID = uid,
-            username = displayName,
+            uid,
+            displayName,
             profilePictureUrl = photoUrl?.toString()
         )
     }

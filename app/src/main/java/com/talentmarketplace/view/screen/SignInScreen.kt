@@ -1,7 +1,6 @@
 package com.talentmarketplace.view.screen
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,11 +11,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.talentmarketplace.R
-import com.talentmarketplace.repository.auth.firebase.GoogleAuthState
 import com.talentmarketplace.view.component.HeaderLabelComponent
 import com.talentmarketplace.view.component.HorizontalDividerComponent
 import com.talentmarketplace.view.component.StandardTextField
@@ -70,6 +73,22 @@ fun SignInScreen(
     }
     **/
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val signInResult by viewModel.signInResult.observeAsState()
+    signInResult?.let { result -> when {
+        result.isSuccess -> {
+            viewModel.onSuccessfulAuthentication()
+        }
+        result.isFailure -> {
+            LaunchedEffect(result.exceptionOrNull()) {
+                snackbarHostState.showSnackbar(
+                    message = signInResult.toString(),
+                    duration = SnackbarDuration.Long,
+                )
+            }
+        }
+    } }
+
     // Prepare the launcher for the Google Sign-In intent
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
@@ -77,7 +96,7 @@ fun SignInScreen(
         if (result.resultCode == Activity.RESULT_OK) {
             viewModel.processGoogleSignInResult(result.data)
         } else {
-            // Handle the error or cancellation
+            // TODO: Handle the error or cancellation
         }
     }
 
@@ -116,8 +135,10 @@ fun SignInScreen(
                 leadingIcon = Icons.Filled.Lock
             )
 
+            SnackbarHost(hostState = snackbarHostState)
+
             WideButtonComponent(
-                onClick = { viewModel.signIn(email, password) },
+                onClick = { viewModel.onSignIn(email, password) },
                 label = R.string.btn_singIn
             )
 
@@ -131,7 +152,7 @@ fun SignInScreen(
                 onClick = {
                     googleSignInIntentSender?.let { intentSender ->
                         googleSignInLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
-                        viewModel.resetGoogleSignInRequest() // Should be called here
+                        viewModel.resetGoogleSignInRequest()
                     } ?: viewModel.initiateGoogleSignIn()
                 },
                 label = R.string.btn_googleSignIn
@@ -142,7 +163,7 @@ fun SignInScreen(
             )
             
             WideButtonComponent(
-                onClick = { viewModel.signUp() },
+                onClick = { viewModel.onSignUpButtonPress() },
                 label = R.string.btn_singUp
             )
         }

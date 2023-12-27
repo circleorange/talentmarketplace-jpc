@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.talentmarketplace.view.screen.JobPostingScreen
+import com.talentmarketplace.view.screen.JobPostScreen
 import com.talentmarketplace.view.screen.JobPostingListScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.Add
@@ -68,10 +68,10 @@ fun MainScreen() {
                 composable(Routes.Auth.SignOut.route) { SignInScreen() }
                 composable(Routes.Auth.SignIn.route) { SignInScreen() }
                 composable(Routes.Job.List.route) { JobPostingListScreen() }
-                composable(Routes.Job.Create.route) { JobPostingScreen() }
+                composable(Routes.Job.Create.route) { JobPostScreen() }
                 composable(Routes.Job.Get.route) { backStackEntry ->
                     val jobPostID = backStackEntry.arguments?.getString("id")
-                    JobPostingScreen(
+                    JobPostScreen(
                         jobPostID = jobPostID,
                         isEditMode = true
                     )
