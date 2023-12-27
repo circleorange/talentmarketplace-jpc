@@ -27,6 +27,7 @@ import com.talentmarketplace.view.screen.JobPostListScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.Button
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
@@ -58,7 +59,7 @@ fun MainScreen() {
         Scaffold (
             topBar = {
                 ToolBar()
-                     },
+            },
             bottomBar = {
                 // Do not show bottomBar during SignUp or SignIn
                 val currentRoute = navController

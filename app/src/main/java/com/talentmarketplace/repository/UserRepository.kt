@@ -1,6 +1,5 @@
 package com.talentmarketplace.repository
 
-import com.talentmarketplace.model.FirestoreUserModel
 import com.talentmarketplace.model.UserModel
 
 interface UserRepository {

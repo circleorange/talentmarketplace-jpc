@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.talentmarketplace.model.FirestoreUserModel
 import com.talentmarketplace.model.UserModel
 import com.talentmarketplace.model.authentication.AuthState
 import com.talentmarketplace.model.authentication.EmailErrorType
@@ -238,18 +237,6 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    // Helper to convert FirebaseUser to UserModel
-    private fun UserModel.toFirestoreUser(): FirestoreUserModel {
-        return FirestoreUserModel(
-            uid = this.uid,
-            username = this.username,
-            email = this.email,
-            profilePictureUrl = profilePictureUrl,
-            firstName = this.firstName,
-            lastName = this.lastName,
-        )
-    }
-
     fun processGoogleSignInResult(data: Intent?) {
         viewModelScope.launch {
             val result = data?.let { googleAuthRepository.signInWithIntent(it) }
@@ -264,8 +251,6 @@ class AuthenticationViewModel @Inject constructor(
             _authState.value = result.data.let { AuthState.Authenticated(it) }
             i("AuthenticationViewModel.processGoogleSignInResult: ${_authState.value}")
 
-            // val firebaseUser = result.data.toFirestoreUser()
-            // userRepository.createUser(firebaseUser)
             userRepository.createUser(result.data)
 
             signInMethodManager.setSignInMethod(SignInMethodManager.GOOGLE)

@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.toObject
-import com.talentmarketplace.model.FirestoreUserModel
 import com.talentmarketplace.model.UserModel
 import com.talentmarketplace.repository.UserRepository
 import kotlinx.coroutines.tasks.await

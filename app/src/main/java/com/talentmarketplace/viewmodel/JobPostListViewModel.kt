@@ -1,5 +1,7 @@
 package com.talentmarketplace.viewmodel
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostModel
@@ -18,7 +20,7 @@ import timber.log.Timber.i
 import javax.inject.Inject
 
 @HiltViewModel
-class JobPostingListViewModel @Inject constructor(
+class JobPostListViewModel @Inject constructor(
     private val jobRepository: JobPostRepository,
     private val basicAuthRepository: BasicAuthRepository,
     private val signInMethodManager: SignInMethodManager,
@@ -32,14 +34,33 @@ class JobPostingListViewModel @Inject constructor(
     private val _jobPosts = MutableStateFlow<List<JobPostModel>>(emptyList())
     val jobPostings = _jobPosts.asStateFlow()
 
+    private val _filter = mutableStateOf("own")
+    val filter: State<String> = _filter
+
+    fun showAllPosts() {
+        _filter.value = "all"
+        getJobPosts()
+    }
+
+    fun showOwnPosts() {
+        _filter.value = "own"
+        getJobPostsByUser()
+    }
+
     fun getJobPosts() {
         viewModelScope.launch {
             i("JobPostListViewModel.getJobPosts")
+            _jobPosts.value = jobRepository.getJobPosts()
+        }
+    }
+
+    fun getJobPostsByUser() {
+        viewModelScope.launch {
+            i("JobPostListViewModel.getJobPostsByUser")
             val currentUser = userRepository.getCurrentUser()!!
             _jobPosts.value = jobRepository.getJobPostsByUserID(currentUser.uid)
         }
     }
-
 
     private fun getJobPosts2() {
         // coroutine setup to handle async operations
@@ -73,6 +94,6 @@ class JobPostingListViewModel @Inject constructor(
 
     init {
         i("JobPostingListViewModel.init")
-        getJobPosts()
+        showOwnPosts()
     }
 }
