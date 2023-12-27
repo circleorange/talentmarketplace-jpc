@@ -130,19 +130,14 @@ fun NavigationBar(navController: NavController) {
                 },
                 label = { Text(text = item.label) },
                 icon = {
-                    BadgedBox(badge = {
-                        if (item.badgeCount != null) {
-                            Badge {  Text(text = item.badgeCount.toString()) }
+                    Icon(
+                        // depends whether icon selected
+                        imageVector = if (index == selectedItemIndex) {
+                            item.selectedIcon
                         }
-                    } ) {
-                        Icon(
-                            // depends whether icon selected
-                            imageVector = if (index == selectedItemIndex) {
-                                item.selectedIcon
-                            }
-                            else item.unselectedIcon,
-                            contentDescription = item.label )
-                    }
+                        else item.unselectedIcon,
+                        contentDescription = item.label
+                    )
                 }
             )
         }
