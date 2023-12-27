@@ -2,6 +2,7 @@ package com.talentmarketplace.view.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,11 +21,13 @@ import androidx.compose.ui.unit.dp
 import com.talentmarketplace.viewmodel.JobPostingListViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.talentmarketplace.model.JobPostModel
+import com.talentmarketplace.utils.FirestoreConversionManager.Companion.localDateFromTimestamp
+import com.talentmarketplace.utils.FirestoreConversionManager.Companion.payRangeFromString
 import com.talentmarketplace.view.navigation.LocalNavController
 import timber.log.Timber.i
 
 @Composable
-fun JobPostingListScreen(
+fun JobPostListScreen(
     viewModel: JobPostingListViewModel = hiltViewModel(),
 ) {
 
@@ -49,20 +52,32 @@ fun JobPostingListScreen(
 
 // Layout for single list item
 @Composable
-fun JobPostingItem(jobPosting: JobPostModel, onClick: () -> Unit) {
-    i("JobPostingListScreen.JobPostingItem.param: $jobPosting")
+fun JobPostingItem(jobPost: JobPostModel, onClick: () -> Unit) {
+    i("JobPostingListScreen.JobPostingItem.param: $jobPost")
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) ) {
-        Column (modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp) ) {
-            Text("Company: ${jobPosting.companyName}")
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("Position: ${jobPosting.title}")
+
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Column (modifier = Modifier
+                .padding(16.dp) ) {
+                Text("Company: ${jobPost.companyName}")
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("Position: ${jobPost.title}")
+            }
+            Column (modifier = Modifier
+                .padding(16.dp) ) {
+                Text("Start: ${localDateFromTimestamp(jobPost.startDate)}")
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("Pay: ${payRangeFromString(jobPost.payRange)}")
+            }
         }
+
     }
 }

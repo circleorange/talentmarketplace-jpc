@@ -1,13 +1,12 @@
 package com.talentmarketplace.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostModel
 import com.talentmarketplace.repository.JobPostRepository
 import com.talentmarketplace.repository.UserRepository
-import com.talentmarketplace.utils.FirestoreConversionManager
 import com.talentmarketplace.utils.FirestoreConversionManager.Companion.localDateFromTimestamp
 import com.talentmarketplace.utils.FirestoreConversionManager.Companion.localDateToTimestamp
 import com.talentmarketplace.utils.FirestoreConversionManager.Companion.payRangeFromString
@@ -24,7 +23,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
-class JobPostingViewModel @Inject constructor(
+class JobPostViewModel @Inject constructor(
     private val jobRepository: JobPostRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
@@ -39,6 +38,8 @@ class JobPostingViewModel @Inject constructor(
     var titleError = mutableStateOf<String?>(null)
     var descriptionError = mutableStateOf<String?>(null)
 
+    // Confirmation Message
+    val showConfirmation = MutableLiveData<Boolean>(false)
 
     // Expose navigation event to redirect user after successful event
     private val _navEvent = MutableSharedFlow<String>()
@@ -93,6 +94,7 @@ class JobPostingViewModel @Inject constructor(
                 startDate = localDateToTimestamp(startDate.value),
             )
             jobRepository.updateJobPost(jobPost)
+            showConfirmation.value = true
         }
     }
 
@@ -110,6 +112,7 @@ class JobPostingViewModel @Inject constructor(
                 startDate = localDateToTimestamp(startDate.value)
             )
             jobRepository.createJobPost(jobPost)
+            showConfirmation.value = true
             i("JobPostingViewModel.addJobPost: $jobPost")
         }
     }
