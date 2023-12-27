@@ -45,6 +45,37 @@ class AuthenticationViewModel @Inject constructor(
     val email = mutableStateOf("")
     val password = mutableStateOf("")
 
+    fun signIn() {
+        viewModelScope.launch {
+            _signInEvent.emit(Routes.Auth.SignIn.route)
+        }
+    }
+
+    private val _signUpResult = MutableLiveData<Result<UserModel>>()
+    val signUpResult: LiveData<Result<UserModel>> = _signUpResult
+    fun onSignUp(email: String, password: String) {
+        viewModelScope.launch {
+            _signUpResult.value = userRepository.signUp(email, password)
+            signInMethodManager.setSignInMethod(SignInMethodManager.BASIC)
+            i("AuthViewModel.onSignUp.result: ${_signUpResult.value}")
+        }
+    }
+    fun onSuccessfulAuthentication() {
+        viewModelScope.launch {
+            _signUpEvent.emit(Routes.Job.List.route)
+        }
+    }
+
+    private val _signInResult = MutableLiveData<Result<UserModel>>()
+    val signInResult: LiveData<Result<UserModel>> = _signInResult
+    fun onSignIn(email:String, password: String) {
+        viewModelScope.launch {
+            _signInResult.value = userRepository.signIn(email, password)
+            i("AuthViewModel.onSignIn.result: ${_signInResult.value}")
+        }
+    }
+
+
     private val _signInEvent = MutableSharedFlow<String>()
     val signInEvent = _signInEvent.asSharedFlow()
     fun signIn(email: String, password: String) {
@@ -78,28 +109,8 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    fun signIn() {
-        viewModelScope.launch {
-            _signInEvent.emit(Routes.Auth.SignIn.route)
-        }
-    }
-
-    fun onSuccessfulSignUp() {
-        viewModelScope.launch {
-            _signUpEvent.emit(Routes.Job.List.route)
-        }
-    }
 
 
-    private val _signUpResult = MutableLiveData<Result<UserModel>>()
-    val signUpResult: LiveData<Result<UserModel>> = _signUpResult
-    fun onSignUp(email: String, password: String) {
-        viewModelScope.launch {
-            _signUpResult.value = userRepository.signUp(email, password)
-            signInMethodManager.setSignInMethod(SignInMethodManager.BASIC)
-            i("AuthViewModel.onSignUp.result: ${_signUpResult.value}")
-        }
-    }
 
     private val _signUpEvent = MutableSharedFlow<String>()
     val signUpEvent = _signUpEvent.asSharedFlow()

@@ -8,6 +8,6 @@ interface JobPostRepository {
     suspend fun getJobPosts(): List<JobPostModel>
     suspend fun deleteJobPost(jobPostID: String)
     suspend fun deleteJobPosts()
-    suspend fun updateJobPost(jobPostID: String, jobPostData: JobPostModel)
+    suspend fun updateJobPost(jobPostData: JobPostModel)
     suspend fun getJobPostsByUserID(userID: String): List<JobPostModel>
 }

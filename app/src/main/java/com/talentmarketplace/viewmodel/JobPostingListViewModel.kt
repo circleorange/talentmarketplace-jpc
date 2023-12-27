@@ -34,6 +34,7 @@ class JobPostingListViewModel @Inject constructor(
 
     fun getJobPosts() {
         viewModelScope.launch {
+            i("JobPostListViewModel.getJobPosts")
             val currentUser = userRepository.getCurrentUser()!!
             _jobPosts.value = jobRepository.getJobPostsByUserID(currentUser.uid)
         }

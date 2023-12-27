@@ -13,21 +13,21 @@ class JobPostMemRepository @Inject constructor() : JobPostRepository {
     }
 
     override suspend fun getJobPostByID(jobPostID: String): JobPostModel? {
-        return jobPostings.find { it.id == jobPostID }
+        return jobPostings.find { it.jobPostID == jobPostID }
     }
 
     override suspend fun getJobPosts(): List<JobPostModel> = jobPostings
 
     override suspend fun deleteJobPost(jobPostID: String) {
-        jobPostings.removeIf { it.id == jobPostID }
+        jobPostings.removeIf { it.jobPostID == jobPostID }
     }
 
     override suspend fun deleteJobPosts() {
         jobPostings.clear()
     }
 
-    override suspend fun updateJobPost(jobPostID: String, jobPostData: JobPostModel) {
-        val index = jobPostings.indexOfFirst { it.id == jobPostID }
+    override suspend fun updateJobPost(jobPostData: JobPostModel) {
+        val index = jobPostings.indexOfFirst { it.jobPostID == jobPostData.jobPostID }
         if (index == -1) { return }
         jobPostings[index] = jobPostData
     }

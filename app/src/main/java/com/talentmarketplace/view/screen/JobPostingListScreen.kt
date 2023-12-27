@@ -42,7 +42,7 @@ fun JobPostingListScreen(
 
     LazyColumn {
         items(jobPostings) { jobPosting -> JobPostingItem(jobPosting) {
-            viewModel.onClickJobPost(jobPosting.id) }
+            viewModel.onClickJobPost(jobPosting.jobPostID) }
         }
     }
 }

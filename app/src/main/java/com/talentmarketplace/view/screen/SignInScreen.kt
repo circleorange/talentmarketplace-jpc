@@ -11,11 +11,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -68,6 +73,22 @@ fun SignInScreen(
     }
     **/
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val signInResult by viewModel.signInResult.observeAsState()
+    signInResult?.let { result -> when {
+        result.isSuccess -> {
+            viewModel.onSuccessfulAuthentication()
+        }
+        result.isFailure -> {
+            LaunchedEffect(result.exceptionOrNull()) {
+                snackbarHostState.showSnackbar(
+                    message = signInResult.toString(),
+                    duration = SnackbarDuration.Long,
+                )
+            }
+        }
+    } }
+
     // Prepare the launcher for the Google Sign-In intent
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
@@ -114,8 +135,10 @@ fun SignInScreen(
                 leadingIcon = Icons.Filled.Lock
             )
 
+            SnackbarHost(hostState = snackbarHostState)
+
             WideButtonComponent(
-                onClick = { viewModel.signIn(email, password) },
+                onClick = { viewModel.onSignIn(email, password) },
                 label = R.string.btn_singIn
             )
 

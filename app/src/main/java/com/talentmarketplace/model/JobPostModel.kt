@@ -1,14 +1,14 @@
 package com.talentmarketplace.model
 
-import java.time.LocalDate
+import com.google.firebase.Timestamp
 import java.util.UUID
 
 data class JobPostModel(
-    val id: String = UUID.randomUUID().toString(),
-    val userID: String,
-    var companyName : String,
-    var title : String,
-    var description : String,
-    var payRange : ClosedFloatingPointRange<Float>,
-    var startDate : LocalDate,
+    var jobPostID: String = "",
+    val userID: String = "",
+    var companyName: String = "",
+    var title: String = "",
+    var description: String = "",
+    var payRange: String = "",
+    var startDate: Timestamp = Timestamp(0, 0),
 )

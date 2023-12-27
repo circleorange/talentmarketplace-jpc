@@ -78,7 +78,7 @@ fun SignUpScreen(
     signUpResult?.let { result ->
         when{
             result.isSuccess -> {
-                viewModel.onSuccessfulSignUp()
+                viewModel.onSuccessfulAuthentication()
             }
             result.isFailure -> {
                 LaunchedEffect(result.exceptionOrNull()) {

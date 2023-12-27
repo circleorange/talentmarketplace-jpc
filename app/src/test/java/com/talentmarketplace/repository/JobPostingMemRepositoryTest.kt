@@ -57,7 +57,7 @@ class JobPostingMemRepositoryTest {
         // Can't use test data here as it's not possible to set ID otherwise
         val id = UUID.randomUUID()
         val jobPosting = JobPostModel(
-            id = id,
+            uid = id,
             companyName = "Google",
             title = "Software Engineer",
             description = "Development of web app",
@@ -112,7 +112,7 @@ class JobPostingMemRepositoryTest {
     fun `deleteJobPosting - success`() {
         val id = UUID.randomUUID()
         val jobPosting = JobPostModel(
-            id = id,
+            uid = id,
             companyName = "Google",
             title = "Software Engineer",
             description = "Development of web app",
@@ -136,7 +136,7 @@ class JobPostingMemRepositoryTest {
     fun `updateJobPosting - success`() {
         val id = UUID.randomUUID()
         val jobPosting = JobPostModel(
-            id = id,
+            uid = id,
             companyName = "Google",
             title = "Software Engineer",
             description = "Development of web app",

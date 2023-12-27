@@ -50,6 +50,7 @@ class UserFirestoreRepository @Inject constructor(
             val authResult = firebaseAuth
                 .signInWithEmailAndPassword(email, password)
                 .await()
+
             val firebaseUser = authResult.user ?: return Result.failure(
                 FirebaseAuthException("No Firebase User", "User not available")
             )

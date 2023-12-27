@@ -1,11 +1,17 @@
 package com.talentmarketplace.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostModel
 import com.talentmarketplace.repository.JobPostRepository
-import com.talentmarketplace.repository.auth.BasicAuthRepository
+import com.talentmarketplace.repository.UserRepository
+import com.talentmarketplace.utils.FirestoreConversionManager
+import com.talentmarketplace.utils.FirestoreConversionManager.Companion.localDateFromTimestamp
+import com.talentmarketplace.utils.FirestoreConversionManager.Companion.localDateToTimestamp
+import com.talentmarketplace.utils.FirestoreConversionManager.Companion.payRangeFromString
+import com.talentmarketplace.utils.FirestoreConversionManager.Companion.payRangeToString
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,8 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JobPostingViewModel @Inject constructor(
-    private val repository: JobPostRepository,
-    private val basicAuthRepository: BasicAuthRepository
+    private val jobRepository: JobPostRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     var companyName = mutableStateOf("")
@@ -49,52 +55,60 @@ class JobPostingViewModel @Inject constructor(
 
     fun getJobPostByID(id: String) {
         viewModelScope.launch {
-            repository.getJobPostByID(id)?.let { jobPost ->
-                companyName.value = jobPost.companyName
-                title.value = jobPost.title
-                description.value = jobPost.description
-                payRange.value = jobPost.payRange
-                startDate.value = jobPost.startDate
-            }
+            val result = jobRepository.getJobPostByID(id)
+            i("JobPostViewModel.getPostByID.id: $result")
+            _jobPostDetails.value = result
+            i("JobPostViewModel.getPostByID.response: ${_jobPostDetails.value}")
         }
+    }
+
+    fun setJobPostDetails() {
+        companyName.value = _jobPostDetails.value!!.companyName
+        title.value = _jobPostDetails.value!!.title
+        description.value = _jobPostDetails.value!!.description
+        payRange.value = payRangeFromString(_jobPostDetails.value!!.payRange)
+        startDate.value = localDateFromTimestamp(_jobPostDetails.value!!.startDate)
     }
 
     fun deleteJobPost(jobPostID: String) {
         i("JobPostViewModel.deleteJobPost.id: $jobPostID")
         viewModelScope.launch {
-            repository.deleteJobPost(jobPostID)
+            jobRepository.deleteJobPost(jobPostID)
         }
     }
 
     fun updateJobPost(jobPostID: String) {
         viewModelScope.launch {
             i("JobPostViewModel.updateJobPost.id: $jobPostID")
-            val signedInUser = basicAuthRepository.getCurrentUser()
+            val currentUser = userRepository.getCurrentUser()!!
+
             val jobPost = JobPostModel(
-                userID = signedInUser!!.uid,
+                jobPostID = jobPostID,
+                userID = currentUser.uid,
                 companyName = companyName.value,
                 title = title.value,
                 description = description.value,
-                payRange = payRange.value,
-                startDate = startDate.value
+                payRange = payRangeToString(payRange.value),
+                startDate = localDateToTimestamp(startDate.value),
             )
-            repository.updateJobPost(jobPostID, jobPost)
+            jobRepository.updateJobPost(jobPost)
         }
     }
 
-    fun addJobPosting() {
+    fun addJobPost() {
         viewModelScope.launch {
             // Only valid inputs past this point
-            val signedInUser = basicAuthRepository.getCurrentUser()
+            val currentUser = userRepository.getCurrentUser()!!
+
             val jobPost = JobPostModel(
-                userID = signedInUser!!.uid,
+                userID = currentUser.uid,
                 companyName = companyName.value,
                 title = title.value,
                 description = description.value,
-                payRange = payRange.value,
-                startDate = startDate.value
+                payRange = payRangeToString(payRange.value),
+                startDate = localDateToTimestamp(startDate.value)
             )
-            repository.createJobPost(jobPost)
+            jobRepository.createJobPost(jobPost)
             i("JobPostingViewModel.addJobPost: $jobPost")
         }
     }

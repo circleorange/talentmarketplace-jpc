@@ -31,16 +31,14 @@ import com.talentmarketplace.viewmodel.JobPostingViewModel
 import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.talentmarketplace.view.navigation.LocalNavController
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun JobPostingScreen(
+fun JobPostScreen(
     viewModel: JobPostingViewModel = hiltViewModel(),
-    jobPostID: String? = "new",
+    jobPostID: String? = null,
     isEditMode: Boolean = false )
 {
 
@@ -63,7 +61,11 @@ fun JobPostingScreen(
     if (isEditMode) {
         // Get job post on list view click
         LaunchedEffect(jobPostID) {
-            jobPostID?.let { viewModel.getJobPostByID(it) }
+            jobPostID?.let {
+                viewModel.getJobPostByID(it)
+
+                viewModel.setJobPostDetails()
+            }
         }
     }
 
@@ -134,7 +136,7 @@ fun JobPostingScreen(
                         viewModel.updateJobPost(jobPostID!!)
                     }
                     else {
-                        viewModel.addJobPosting()
+                        viewModel.addJobPost()
                     }
                     viewModel.onJobPostRedirect()
                           },
