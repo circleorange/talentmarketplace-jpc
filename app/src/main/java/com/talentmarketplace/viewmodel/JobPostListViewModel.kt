@@ -22,7 +22,6 @@ import javax.inject.Inject
 @HiltViewModel
 class JobPostListViewModel @Inject constructor(
     private val jobRepository: JobPostRepository,
-    private val basicAuthRepository: BasicAuthRepository,
     private val signInMethodManager: SignInMethodManager,
     private val userRepository: UserFirestoreRepository,
 ) : ViewModel() {
@@ -60,25 +59,6 @@ class JobPostListViewModel @Inject constructor(
             val currentUser = userRepository.getCurrentUser()!!
             _jobPosts.value = jobRepository.getJobPostsByUserID(currentUser.uid)
         }
-    }
-
-    private fun getJobPosts2() {
-        // coroutine setup to handle async operations
-        viewModelScope.launch {
-            if (signInMethod == SignInMethodManager.BASIC) {
-                i("JobPostListViewModel.getJobPosts.signInMethod.BASIC")
-                val signedInUser = basicAuthRepository.getCurrentUser()
-                i("JobPostListViewModel.getJobPosts.userId: $signedInUser.id")
-                _jobPosts.value = jobRepository.getJobPostsByUserID(signedInUser!!.uid)
-            }
-            else if (signInMethod == SignInMethodManager.GOOGLE) {
-                i("JobPostListViewModel.getJobPosts.signInMethod.GOOGLE")
-                val currentUserID = userRepository.getCurrentUser()!!.uid
-                _jobPosts.value = jobRepository.getJobPostsByUserID(currentUserID)
-            }
-
-        }
-        i("JobPostingListViewModel.getJobPosts.items: ${_jobPosts.value}")
     }
 
     // Expose SharedFlow to emit navigation route
