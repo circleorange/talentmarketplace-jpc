@@ -52,6 +52,10 @@ class UserViewModel @Inject constructor (
 
         viewModelScope.launch {
             userRepository.updateUser(updatedUserDetails)
+            showConfirmation.value = true
         }
     }
+
+    // Confirmation
+    val showConfirmation = MutableLiveData<Boolean>(false)
 }

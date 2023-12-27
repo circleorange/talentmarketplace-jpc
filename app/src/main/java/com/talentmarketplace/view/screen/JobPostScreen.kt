@@ -143,28 +143,31 @@ fun JobPostScreen(
                 elevation = ButtonDefaults.buttonElevation(20.dp) ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
                 Spacer(modifier = Modifier.width(width = 4.dp))
-                Text(stringResource(id = R.string.button_addJobPosting))
+                Text(
+                    text = if (isEditMode) {
+                        stringResource(R.string.btn_save)
+                    } else {
+                        stringResource(R.string.button_addJobPosting)
+                    }
+                )
             }
             
             Spacer(
                 modifier = Modifier.width(16.dp),
             )
 
-            Divider(
-                thickness = 4.dp,
-            )
-            
-            Button(
-                onClick = {
-                    if (isEditMode) {
+            if (isEditMode) {
+                Button(
+                    onClick = {
                         viewModel.deleteJobPost(jobPostID!!)
                         viewModel.onJobPostRedirect()
-                    }
-                          },
-                elevation = ButtonDefaults.buttonElevation(20.dp) ) {
-                Icon(Icons.Default.Delete, contentDescription = "Add")
-                Spacer(modifier = Modifier.width(width = 4.dp))
-                Text(stringResource(id = R.string.button_deleteJobPost))
+                    },
+                    elevation = ButtonDefaults.buttonElevation(20.dp)
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = "Add")
+                    Spacer(modifier = Modifier.width(width = 4.dp))
+                    Text(stringResource(id = R.string.button_deleteJobPost))
+                }
             }
         }
     }

@@ -5,8 +5,8 @@
 
     <!-- Job -->
 
-    <string name="button_addJobPosting">Add Position</string>
-    <string name="button_deleteJobPost">Delete Position</string>
+    <string name="button_addJobPosting">Add Post</string>
+    <string name="button_deleteJobPost">Delete Post</string>
     <string name="text_Title">Title</string>
 
     <string name="text_titleHint">Enter Title</string>
