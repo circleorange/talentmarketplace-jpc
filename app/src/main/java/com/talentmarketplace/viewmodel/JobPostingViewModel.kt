@@ -55,19 +55,20 @@ class JobPostingViewModel @Inject constructor(
 
     fun getJobPostByID(id: String) {
         viewModelScope.launch {
-            val result = jobRepository.getJobPostByID(id)
-            i("JobPostViewModel.getPostByID.id: $result")
-            _jobPostDetails.value = result
-            i("JobPostViewModel.getPostByID.response: ${_jobPostDetails.value}")
+            jobRepository.getJobPostByID(id)?.let {
+                _jobPostDetails.value = it
+                setJobPostDetails(it)
+            }
         }
+        i("JobPostViewModel.getPostByID: $_jobPostDetails")
     }
 
-    fun setJobPostDetails() {
-        companyName.value = _jobPostDetails.value!!.companyName
-        title.value = _jobPostDetails.value!!.title
-        description.value = _jobPostDetails.value!!.description
-        payRange.value = payRangeFromString(_jobPostDetails.value!!.payRange)
-        startDate.value = localDateFromTimestamp(_jobPostDetails.value!!.startDate)
+    fun setJobPostDetails(jobPost: JobPostModel) {
+        companyName.value = jobPost.companyName
+        title.value = jobPost.title
+        description.value = jobPost.description
+        payRange.value = payRangeFromString(jobPost.payRange)
+        startDate.value = localDateFromTimestamp(jobPost.startDate)
     }
 
     fun deleteJobPost(jobPostID: String) {

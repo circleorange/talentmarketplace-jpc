@@ -63,8 +63,6 @@ fun JobPostScreen(
         LaunchedEffect(jobPostID) {
             jobPostID?.let {
                 viewModel.getJobPostByID(it)
-
-                viewModel.setJobPostDetails()
             }
         }
     }
