@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostModel
+import com.talentmarketplace.model.UserModel
 import com.talentmarketplace.repository.JobPostRepository
 import com.talentmarketplace.repository.UserRepository
 import com.talentmarketplace.utils.FirestoreConversionManager.Companion.localDateFromTimestamp
@@ -32,7 +33,7 @@ class JobPostViewModel @Inject constructor(
     // User Variables
     var currentUserID = mutableStateOf("")
     var postOwnerID = mutableStateOf("")
-    var postOwner = mutableStateOf(null)
+    var postOwner = mutableStateOf<UserModel?>(null)
 
     // Job Post Variables
     var companyName = mutableStateOf("")
@@ -52,16 +53,20 @@ class JobPostViewModel @Inject constructor(
     private val _navEvent = MutableSharedFlow<String>()
     val navEvent = _navEvent.asSharedFlow()
 
-    init {
-        getCurrentUser()
-    }
-
     private fun getCurrentUser() {
         viewModelScope.launch {
             currentUserID.value = userRepository.getCurrentUser()!!.uid
+            i("getCurrentUser.end: ${currentUserID.value}")
         }
     }
 
+    private fun getJobPostOwner() {
+        viewModelScope.launch {
+            i("getJobPostOwner.id: ${postOwnerID.value}")
+            postOwner.value = userRepository.getUserByID(postOwnerID.value)
+            i("getJobPostOwner.end: ${postOwner.value}")
+        }
+    }
 
     fun onJobPostRedirect() {
         viewModelScope.launch { _navEvent.emit(Routes.Job.List.route) }
@@ -77,11 +82,14 @@ class JobPostViewModel @Inject constructor(
                 _jobPostDetails.value = it
                 setJobPostDetails(it)
             }
+            getCurrentUser()
+            getJobPostOwner()
+            i("getJobPostByID.end")
         }
         i("JobPostViewModel.getPostByID: $_jobPostDetails")
     }
 
-    fun setJobPostDetails(jobPost: JobPostModel) {
+    private fun setJobPostDetails(jobPost: JobPostModel) {
         postOwnerID.value = jobPost.userID
         companyName.value = jobPost.companyName
         title.value = jobPost.title

@@ -37,6 +37,7 @@ import com.talentmarketplace.viewmodel.JobPostViewModel
 import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.talentmarketplace.view.component.UserCardComponent
 import com.talentmarketplace.view.navigation.LocalNavController
 import java.time.format.DateTimeFormatter
 
@@ -88,28 +89,40 @@ fun JobPostScreen(
             .fillMaxSize()
             .padding(all = 5.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally ) {
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        if (isEditMode) {
+            UserCardComponent(
+                profilePictureURL = viewModel.postOwner.value?.profilePictureUrl,
+                email = viewModel.postOwner.value?.email ?: "",
+                firstName = "Posted",
+                lastName = "By:",
+            )
+        }
 
         StandardTextField(
             value = companyName,
             onValueChange = { viewModel.companyName.value = it },
             labelResourceID = R.string.text_companyNameHint,
             showError = companyNameError != null,
-            errorMessage = companyNameError )
+            errorMessage = companyNameError
+        )
 
         StandardTextField(
             value = title,
             onValueChange = { viewModel.title.value = it },
             labelResourceID = R.string.text_titleHint,
             showError = titleError != null,
-            errorMessage = titleError )
+            errorMessage = titleError
+        )
 
         StandardTextField(
             value = description,
             onValueChange = { viewModel.description.value = it },
             labelResourceID = R.string.text_jobDescriptionHint,
             showError = descriptionError != null,
-            errorMessage = descriptionError )
+            errorMessage = descriptionError
+        )
 
         Text(text = "Selected range: ${payRange.start.toInt()} - ${payRange.endInclusive.toInt()}")
         RangeSlider(
