@@ -7,8 +7,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -25,10 +23,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.talentmarketplace.view.screen.JobPostScreen
-import com.talentmarketplace.view.screen.JobPostingListScreen
+import com.talentmarketplace.view.screen.JobPostListScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.Button
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
@@ -39,7 +38,6 @@ import com.talentmarketplace.view.screen.ProfileScreen
 import com.talentmarketplace.view.screen.SettingsScreen
 import com.talentmarketplace.view.screen.SignInScreen
 import com.talentmarketplace.view.screen.SignUpScreen
-import okhttp3.Route
 
 data class BottomNavigationItem(
     val label: String,
@@ -61,7 +59,7 @@ fun MainScreen() {
         Scaffold (
             topBar = {
                 ToolBar()
-                     },
+            },
             bottomBar = {
                 // Do not show bottomBar during SignUp or SignIn
                 val currentRoute = navController
@@ -86,7 +84,7 @@ fun MainScreen() {
                 composable(Routes.Auth.SignUp.route) { SignUpScreen() }
                 composable(Routes.Auth.SignOut.route) { SignInScreen() }
                 composable(Routes.Auth.SignIn.route) { SignInScreen() }
-                composable(Routes.Job.List.route) { JobPostingListScreen() }
+                composable(Routes.Job.List.route) { JobPostListScreen() }
                 composable(Routes.Job.Create.route) { JobPostScreen() }
                 composable(Routes.Job.Get.route) { backStackEntry ->
                     val jobPostID = backStackEntry.arguments?.getString("id")

@@ -13,15 +13,19 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,17 +33,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.talentmarketplace.R
 import com.talentmarketplace.view.component.StandardTextField
-import com.talentmarketplace.viewmodel.JobPostingViewModel
+import com.talentmarketplace.viewmodel.JobPostViewModel
 import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.talentmarketplace.view.component.UserCardComponent
 import com.talentmarketplace.view.navigation.LocalNavController
 import java.time.format.DateTimeFormatter
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun JobPostScreen(
-    viewModel: JobPostingViewModel = hiltViewModel(),
+    viewModel: JobPostViewModel = hiltViewModel(),
     jobPostID: String? = null,
     isEditMode: Boolean = false )
 {
@@ -76,35 +81,51 @@ fun JobPostScreen(
         }
     }
 
+    val showConfirmation = viewModel.showConfirmation.observeAsState(initial = false)
+    val showErrorNotPostOwner = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(all = 5.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally ) {
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        if (isEditMode) {
+            UserCardComponent(
+                profilePictureURL = viewModel.postOwner.value?.profilePictureUrl,
+                email = viewModel.postOwner.value?.email ?: "",
+                firstName = "Posted",
+                lastName = "By:",
+            )
+        }
 
         StandardTextField(
             value = companyName,
             onValueChange = { viewModel.companyName.value = it },
             labelResourceID = R.string.text_companyNameHint,
             showError = companyNameError != null,
-            errorMessage = companyNameError )
+            errorMessage = companyNameError
+        )
 
         StandardTextField(
             value = title,
             onValueChange = { viewModel.title.value = it },
             labelResourceID = R.string.text_titleHint,
             showError = titleError != null,
-            errorMessage = titleError )
+            errorMessage = titleError
+        )
 
         StandardTextField(
             value = description,
             onValueChange = { viewModel.description.value = it },
             labelResourceID = R.string.text_jobDescriptionHint,
             showError = descriptionError != null,
-            errorMessage = descriptionError )
+            errorMessage = descriptionError
+        )
 
         Text(text = "Selected range: ${payRange.start.toInt()} - ${payRange.endInclusive.toInt()}")
+
         RangeSlider(
             value = payRange,
             onValueChange = { viewModel.payRange.value = it },
@@ -131,7 +152,13 @@ fun JobPostScreen(
             Button(
                 onClick = {
                     // Exit early if invalid input, no need for nested if statements
-                    if (!viewModel.isValid()) return@Button
+                    if (!viewModel.isValid()) {
+                        return@Button
+                    }
+                    if (viewModel.currentUserID.value != viewModel.postOwnerID.value) {
+                        showErrorNotPostOwner.value = true
+                        return@Button
+                    }
                     if (isEditMode) {
                         viewModel.updateJobPost(jobPostID!!)
                     }
@@ -159,6 +186,10 @@ fun JobPostScreen(
             if (isEditMode) {
                 Button(
                     onClick = {
+                        if (viewModel.currentUserID.value != viewModel.postOwnerID.value) {
+                            showErrorNotPostOwner.value = true
+                            return@Button
+                        }
                         viewModel.deleteJobPost(jobPostID!!)
                         viewModel.onJobPostRedirect()
                     },
@@ -168,6 +199,30 @@ fun JobPostScreen(
                     Spacer(modifier = Modifier.width(width = 4.dp))
                     Text(stringResource(id = R.string.button_deleteJobPost))
                 }
+            }
+        }
+        if (showConfirmation.value) {
+            Snackbar(
+                modifier = Modifier.padding(16.dp),
+                action = {
+                    TextButton(onClick = { viewModel.showConfirmation.value = false }) {
+                        Text("OK")
+                    }
+                }
+            ) {
+                Text("User details updated")
+            }
+        }
+        if (showErrorNotPostOwner.value) {
+            Snackbar(
+                modifier = Modifier.padding(16.dp),
+                action = {
+                    TextButton(onClick = { showErrorNotPostOwner.value = false }) {
+                        Text("OK")
+                    }
+                }
+            ) {
+                Text("You are not the owner of this post.")
             }
         }
     }

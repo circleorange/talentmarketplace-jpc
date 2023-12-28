@@ -1,6 +1,5 @@
 package com.talentmarketplace.repository
 
-import com.talentmarketplace.model.FirestoreUserModel
 import com.talentmarketplace.model.UserModel
 
 interface UserRepository {
@@ -12,4 +11,5 @@ interface UserRepository {
     suspend fun getCurrentUser(): UserModel?
     suspend fun updateUser(user: UserModel)
 
+    suspend fun getUserByID(uid: String): UserModel?
 }

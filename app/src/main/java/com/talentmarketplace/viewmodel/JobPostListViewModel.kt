@@ -1,5 +1,7 @@
 package com.talentmarketplace.viewmodel
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostModel
@@ -18,9 +20,8 @@ import timber.log.Timber.i
 import javax.inject.Inject
 
 @HiltViewModel
-class JobPostingListViewModel @Inject constructor(
+class JobPostListViewModel @Inject constructor(
     private val jobRepository: JobPostRepository,
-    private val basicAuthRepository: BasicAuthRepository,
     private val signInMethodManager: SignInMethodManager,
     private val userRepository: UserFirestoreRepository,
 ) : ViewModel() {
@@ -32,32 +33,32 @@ class JobPostingListViewModel @Inject constructor(
     private val _jobPosts = MutableStateFlow<List<JobPostModel>>(emptyList())
     val jobPostings = _jobPosts.asStateFlow()
 
+    private val _filter = mutableStateOf("own")
+    val filter: State<String> = _filter
+
+    fun showAllPosts() {
+        _filter.value = "all"
+        getJobPosts()
+    }
+
+    fun showOwnPosts() {
+        _filter.value = "own"
+        getJobPostsByUser()
+    }
+
     fun getJobPosts() {
         viewModelScope.launch {
             i("JobPostListViewModel.getJobPosts")
-            val currentUser = userRepository.getCurrentUser()!!
-            _jobPosts.value = jobRepository.getJobPostsByUserID(currentUser.uid)
+            _jobPosts.value = jobRepository.getJobPosts()
         }
     }
 
-
-    private fun getJobPosts2() {
-        // coroutine setup to handle async operations
+    fun getJobPostsByUser() {
         viewModelScope.launch {
-            if (signInMethod == SignInMethodManager.BASIC) {
-                i("JobPostListViewModel.getJobPosts.signInMethod.BASIC")
-                val signedInUser = basicAuthRepository.getCurrentUser()
-                i("JobPostListViewModel.getJobPosts.userId: $signedInUser.id")
-                _jobPosts.value = jobRepository.getJobPostsByUserID(signedInUser!!.uid)
-            }
-            else if (signInMethod == SignInMethodManager.GOOGLE) {
-                i("JobPostListViewModel.getJobPosts.signInMethod.GOOGLE")
-                val currentUserID = userRepository.getCurrentUser()!!.uid
-                _jobPosts.value = jobRepository.getJobPostsByUserID(currentUserID)
-            }
-
+            i("JobPostListViewModel.getJobPostsByUser")
+            val currentUser = userRepository.getCurrentUser()!!
+            _jobPosts.value = jobRepository.getJobPostsByUserID(currentUser.uid)
         }
-        i("JobPostingListViewModel.getJobPosts.items: ${_jobPosts.value}")
     }
 
     // Expose SharedFlow to emit navigation route
@@ -73,6 +74,6 @@ class JobPostingListViewModel @Inject constructor(
 
     init {
         i("JobPostingListViewModel.init")
-        getJobPosts()
+        showOwnPosts()
     }
 }
