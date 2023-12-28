@@ -125,6 +125,7 @@ fun JobPostScreen(
         )
 
         Text(text = "Selected range: ${payRange.start.toInt()} - ${payRange.endInclusive.toInt()}")
+
         RangeSlider(
             value = payRange,
             onValueChange = { viewModel.payRange.value = it },
