@@ -11,4 +11,5 @@ interface UserRepository {
     suspend fun getCurrentUser(): UserModel?
     suspend fun updateUser(user: UserModel)
 
+    suspend fun getUserByID(uid: String): UserModel?
 }

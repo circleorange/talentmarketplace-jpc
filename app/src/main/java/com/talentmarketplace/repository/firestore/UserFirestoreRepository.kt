@@ -56,6 +56,20 @@ class UserFirestoreRepository @Inject constructor(
         }
     }
 
+    override suspend fun getUserByID(uid: String): UserModel? {
+        return try {
+            usersCollection
+                .document(uid)
+                .get()
+                .await()
+                .toObject<UserModel>()
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     override suspend fun signIn(email: String, password: String): Result<UserModel> {
         return try {
             val authResult = firebaseAuth

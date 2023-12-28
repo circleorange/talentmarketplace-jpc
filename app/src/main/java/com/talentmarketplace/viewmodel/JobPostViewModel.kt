@@ -29,9 +29,12 @@ class JobPostViewModel @Inject constructor(
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
+    // User Variables
     var currentUserID = mutableStateOf("")
-
     var postOwnerID = mutableStateOf("")
+    var postOwner = mutableStateOf(null)
+
+    // Job Post Variables
     var companyName = mutableStateOf("")
     var title = mutableStateOf("")
     var description = mutableStateOf("")
@@ -58,6 +61,7 @@ class JobPostViewModel @Inject constructor(
             currentUserID.value = userRepository.getCurrentUser()!!.uid
         }
     }
+
 
     fun onJobPostRedirect() {
         viewModelScope.launch { _navEvent.emit(Routes.Job.List.route) }
