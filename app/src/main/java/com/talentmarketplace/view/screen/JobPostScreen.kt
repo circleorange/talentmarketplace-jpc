@@ -24,6 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,6 +81,7 @@ fun JobPostScreen(
     }
 
     val showConfirmation = viewModel.showConfirmation.observeAsState(initial = false)
+    val showErrorNotPostOwner = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -135,7 +138,13 @@ fun JobPostScreen(
             Button(
                 onClick = {
                     // Exit early if invalid input, no need for nested if statements
-                    if (!viewModel.isValid()) return@Button
+                    if (!viewModel.isValid()) {
+                        return@Button
+                    }
+                    if (viewModel.currentUserID.value != viewModel.postOwnerID.value) {
+                        showErrorNotPostOwner.value = true
+                        return@Button
+                    }
                     if (isEditMode) {
                         viewModel.updateJobPost(jobPostID!!)
                     }
@@ -163,6 +172,10 @@ fun JobPostScreen(
             if (isEditMode) {
                 Button(
                     onClick = {
+                        if (viewModel.currentUserID.value != viewModel.postOwnerID.value) {
+                            showErrorNotPostOwner.value = true
+                            return@Button
+                        }
                         viewModel.deleteJobPost(jobPostID!!)
                         viewModel.onJobPostRedirect()
                     },
@@ -184,6 +197,18 @@ fun JobPostScreen(
                 }
             ) {
                 Text("User details updated")
+            }
+        }
+        if (showErrorNotPostOwner.value) {
+            Snackbar(
+                modifier = Modifier.padding(16.dp),
+                action = {
+                    TextButton(onClick = { showErrorNotPostOwner.value = false }) {
+                        Text("OK")
+                    }
+                }
+            ) {
+                Text("You are not the owner of this post.")
             }
         }
     }

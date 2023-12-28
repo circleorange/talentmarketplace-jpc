@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.internal.immutableListOf
 import timber.log.Timber.i
 import java.time.LocalDate
 import javax.inject.Inject
@@ -28,6 +29,9 @@ class JobPostViewModel @Inject constructor(
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
+    var currentUserID = mutableStateOf("")
+
+    var postOwnerID = mutableStateOf("")
     var companyName = mutableStateOf("")
     var title = mutableStateOf("")
     var description = mutableStateOf("")
@@ -45,6 +49,16 @@ class JobPostViewModel @Inject constructor(
     private val _navEvent = MutableSharedFlow<String>()
     val navEvent = _navEvent.asSharedFlow()
 
+    init {
+        getCurrentUser()
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            currentUserID.value = userRepository.getCurrentUser()!!.uid
+        }
+    }
+
     fun onJobPostRedirect() {
         viewModelScope.launch { _navEvent.emit(Routes.Job.List.route) }
         i("JobPostListViewModel.onJobPost.redirect")
@@ -52,7 +66,6 @@ class JobPostViewModel @Inject constructor(
 
     // Expose job post details for composable
     private val _jobPostDetails = MutableStateFlow<JobPostModel?>(null)
-    val jobPostDetails = _jobPostDetails.asStateFlow()
 
     fun getJobPostByID(id: String) {
         viewModelScope.launch {
@@ -65,6 +78,7 @@ class JobPostViewModel @Inject constructor(
     }
 
     fun setJobPostDetails(jobPost: JobPostModel) {
+        postOwnerID.value = jobPost.userID
         companyName.value = jobPost.companyName
         title.value = jobPost.title
         description.value = jobPost.description
@@ -82,11 +96,10 @@ class JobPostViewModel @Inject constructor(
     fun updateJobPost(jobPostID: String) {
         viewModelScope.launch {
             i("JobPostViewModel.updateJobPost.id: $jobPostID")
-            val currentUser = userRepository.getCurrentUser()!!
 
             val jobPost = JobPostModel(
                 jobPostID = jobPostID,
-                userID = currentUser.uid,
+                userID = currentUserID.value,
                 companyName = companyName.value,
                 title = title.value,
                 description = description.value,
@@ -101,10 +114,9 @@ class JobPostViewModel @Inject constructor(
     fun addJobPost() {
         viewModelScope.launch {
             // Only valid inputs past this point
-            val currentUser = userRepository.getCurrentUser()!!
 
             val jobPost = JobPostModel(
-                userID = currentUser.uid,
+                userID = currentUserID.value,
                 companyName = companyName.value,
                 title = title.value,
                 description = description.value,
