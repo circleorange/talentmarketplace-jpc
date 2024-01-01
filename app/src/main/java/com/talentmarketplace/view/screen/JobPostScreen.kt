@@ -38,30 +38,24 @@ import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.talentmarketplace.view.component.UserCardComponent
 import com.talentmarketplace.view.navigation.LocalNavController
+import com.talentmarketplace.view.navigation.Routes
+import timber.log.Timber.i
 import java.time.format.DateTimeFormatter
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun JobPostScreen(
     jobPostID: String? = null,
-    isEditMode: Boolean = false,
-    navController: NavController = LocalNavController.current,
-    jobPostViewModel: JobPostViewModel = hiltViewModel(),
 ) {
 
-    /**
-    // Provide the ViewModel conditionally based on whether an ID is present
-    val viewModel: JobPostViewModel = if (jobPostID != null) {
-        // If we have a jobPostID, we're in edit mode and should get a specific ViewModel
-        hiltViewModel(navController.getBackStackEntry(Routes.Job.Get.byID(jobPostID)))
-    } else {
-        // If there's no jobPostID, we're creating a new job post and can use a general ViewModel
-        hiltViewModel()
-    }
-    **/
+    val navController: NavController = LocalNavController.current
+    val jobPostViewModel: JobPostViewModel = hiltViewModel()
 
+    var isEditMode = false
+    if (jobPostID != "null") { isEditMode = true }
 
     // Binding to ViewModel state
     val companyName by jobPostViewModel.companyName

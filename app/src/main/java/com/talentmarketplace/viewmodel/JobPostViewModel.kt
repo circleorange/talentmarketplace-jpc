@@ -35,7 +35,7 @@ class JobPostViewModel @Inject constructor(
     var postOwner = mutableStateOf<UserModel?>(null)
 
     // Job Post Variables
-    val jobPostID = mutableStateOf("")
+    val jobPostID = mutableStateOf<String?>(null)
     var companyName = mutableStateOf("")
     var title = mutableStateOf("")
     var description = mutableStateOf("")
@@ -62,7 +62,6 @@ class JobPostViewModel @Inject constructor(
     fun onMarkLocationClicked(isEditMode: Boolean) {
         viewModelScope.launch {
             _currentJobPost.value = JobPostModel(
-                jobPostID = jobPostID.value,
                 userID = postOwnerID.value,
                 companyName = companyName.value,
                 title = title.value,
@@ -72,14 +71,7 @@ class JobPostViewModel @Inject constructor(
             )
             i("onMarkLocationClicked.currentJobPost: ${_currentJobPost.value}")
 
-            if (isEditMode) {
-                i("onMarkLocationClicked.isEditMode: true")
-                _navEvent.emit(Routes.Job.Map.byGet(jobPostID.value))
-            }
-            else {
-                i("onMarkLocationClicked.isEditMode: false")
-                _navEvent.emit(Routes.Job.Map.byCreate())
-            }
+            _navEvent.emit(Routes.Job.Get.map(jobPostID.value))
         }
     }
 

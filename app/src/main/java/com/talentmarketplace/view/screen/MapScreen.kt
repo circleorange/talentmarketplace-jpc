@@ -22,9 +22,10 @@ import com.talentmarketplace.viewmodel.JobPostViewModel
 @Composable
 fun MapScreen(
     jobPostID: String?,
-    jobPostViewModel: JobPostViewModel = hiltViewModel(),
-    navController: NavController = LocalNavController.current,
 ) {
+    val jobPostViewModel: JobPostViewModel = hiltViewModel()
+    val navController: NavController = LocalNavController.current
+
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(53.2740, -9.0513), 10f)
     }

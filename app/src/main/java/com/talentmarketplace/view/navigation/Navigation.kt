@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -82,28 +83,21 @@ fun MainScreen() {
                 composable(Routes.Auth.SignOut.route) { SignInScreen() }
                 composable(Routes.Auth.SignIn.route) { SignInScreen() }
                 composable(Routes.Job.List.route) { JobPostListScreen() }
-                composable(Routes.Job.Create.route) { JobPostScreen() }
-                // Get existing Job Post by ID
+                // Get Job Post by ID, null ID means new Job Post
                 composable(
                     route = Routes.Job.Get.byID("{id}"),
                     arguments = listOf(navArgument("id") { type = NavType.StringType })
                 ) { backStackEntry ->
                     val jobPostID = backStackEntry.arguments?.getString("id")
-                    JobPostScreen(jobPostID = jobPostID, isEditMode = true)
+                    JobPostScreen(jobPostID = jobPostID)
                 }
-                // Get Map screen for new Job Post
-                composable(route = Routes.Job.Map.byCreate()) { backStackEntry ->
-                    val viewModel: JobPostViewModel = hiltViewModel(backStackEntry)
-                    MapScreen(jobPostViewModel = viewModel, jobPostID = null)
-                }
-                // Get Map screen for existing Job Post
+                // Get Map screen for Job Post
                 composable(
-                    route = Routes.Job.Map.byGet("{id}"),
+                    route = Routes.Job.Get.map("{id}"),
                     arguments = listOf(navArgument("id") { type = NavType.StringType })
                 ) { backStackEntry ->
                     val jobPostID = backStackEntry.arguments?.getString("id")
-                    val viewModel: JobPostViewModel = hiltViewModel(backStackEntry)
-                    MapScreen(jobPostViewModel = viewModel, jobPostID = jobPostID!!)
+                    MapScreen(jobPostID = jobPostID)
                 }
             }
         }
@@ -139,7 +133,7 @@ fun NavigationBar(navController: NavController) {
     )
 
     var selectedItemIndex by rememberSaveable {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
 
     NavigationBar {
@@ -150,7 +144,7 @@ fun NavigationBar(navController: NavController) {
                     selectedItemIndex = index
                     when (index) {
                         0 -> navController.navigate(Routes.Job.List.route)
-                        1 -> navController.navigate(Routes.Job.Create.route)
+                        1 -> navController.navigate(Routes.Job.Get.byID(null))
                         2 -> navController.navigate(Routes.User.Profile.route)
                         3 -> navController.navigate(Routes.User.Settings.route)
                     }
