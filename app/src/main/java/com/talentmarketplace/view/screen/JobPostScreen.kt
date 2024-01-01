@@ -37,6 +37,7 @@ import com.talentmarketplace.viewmodel.JobPostViewModel
 import java.time.LocalDate
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.talentmarketplace.view.component.UserCardComponent
 import com.talentmarketplace.view.navigation.LocalNavController
 import java.time.format.DateTimeFormatter
@@ -44,44 +45,55 @@ import java.time.format.DateTimeFormatter
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun JobPostScreen(
-    viewModel: JobPostViewModel = hiltViewModel(),
     jobPostID: String? = null,
-    isEditMode: Boolean = false )
-{
+    isEditMode: Boolean = false,
+    navController: NavController = LocalNavController.current,
+    jobPostViewModel: JobPostViewModel = hiltViewModel(),
+) {
 
-    val navController = LocalNavController.current
+    /**
+    // Provide the ViewModel conditionally based on whether an ID is present
+    val viewModel: JobPostViewModel = if (jobPostID != null) {
+        // If we have a jobPostID, we're in edit mode and should get a specific ViewModel
+        hiltViewModel(navController.getBackStackEntry(Routes.Job.Get.byID(jobPostID)))
+    } else {
+        // If there's no jobPostID, we're creating a new job post and can use a general ViewModel
+        hiltViewModel()
+    }
+    **/
+
 
     // Binding to ViewModel state
-    val companyName by viewModel.companyName
-    val title by viewModel.title
-    val description by viewModel.description
-    val payRange by viewModel.payRange
-    var selectedDate by viewModel.startDate
+    val companyName by jobPostViewModel.companyName
+    val title by jobPostViewModel.title
+    val description by jobPostViewModel.description
+    val payRange by jobPostViewModel.payRange
+    var selectedDate by jobPostViewModel.startDate
 
     val context = LocalContext.current
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    val companyNameError by viewModel.companyNameError
-    val titleError by viewModel.titleError
-    val descriptionError by viewModel.descriptionError
+    val companyNameError by jobPostViewModel.companyNameError
+    val titleError by jobPostViewModel.titleError
+    val descriptionError by jobPostViewModel.descriptionError
 
     if (isEditMode) {
         // Get job post on list view click
         LaunchedEffect(jobPostID) {
             jobPostID?.let {
-                viewModel.getJobPostByID(it)
+                jobPostViewModel.getJobPostByID(it)
             }
         }
     }
 
     // Collect exposed navigation commands from view model
-    LaunchedEffect(viewModel) {
-        viewModel.navEvent.collect {
+    LaunchedEffect(jobPostViewModel) {
+        jobPostViewModel.navEvent.collect {
                 route -> navController.navigate(route)
         }
     }
 
-    val showConfirmation = viewModel.showConfirmation.observeAsState(initial = false)
+    val showConfirmation = jobPostViewModel.showConfirmation.observeAsState(initial = false)
     val showErrorNotPostOwner = remember { mutableStateOf(false) }
 
     Column(
@@ -93,8 +105,8 @@ fun JobPostScreen(
     ) {
         if (isEditMode) {
             UserCardComponent(
-                profilePictureURL = viewModel.postOwner.value?.profilePictureUrl,
-                email = viewModel.postOwner.value?.email ?: "",
+                profilePictureURL = jobPostViewModel.postOwner.value?.profilePictureUrl,
+                email = jobPostViewModel.postOwner.value?.email ?: "",
                 firstName = "Posted",
                 lastName = "By:",
             )
@@ -102,7 +114,7 @@ fun JobPostScreen(
 
         StandardTextField(
             value = companyName,
-            onValueChange = { viewModel.companyName.value = it },
+            onValueChange = { jobPostViewModel.companyName.value = it },
             labelResourceID = R.string.text_companyNameHint,
             showError = companyNameError != null,
             errorMessage = companyNameError
@@ -110,7 +122,7 @@ fun JobPostScreen(
 
         StandardTextField(
             value = title,
-            onValueChange = { viewModel.title.value = it },
+            onValueChange = { jobPostViewModel.title.value = it },
             labelResourceID = R.string.text_titleHint,
             showError = titleError != null,
             errorMessage = titleError
@@ -118,7 +130,7 @@ fun JobPostScreen(
 
         StandardTextField(
             value = description,
-            onValueChange = { viewModel.description.value = it },
+            onValueChange = { jobPostViewModel.description.value = it },
             labelResourceID = R.string.text_jobDescriptionHint,
             showError = descriptionError != null,
             errorMessage = descriptionError
@@ -128,7 +140,7 @@ fun JobPostScreen(
 
         RangeSlider(
             value = payRange,
-            onValueChange = { viewModel.payRange.value = it },
+            onValueChange = { jobPostViewModel.payRange.value = it },
             valueRange = 0f..5000f,
             steps = 500,
             onValueChangeFinished = {  } )
@@ -148,24 +160,31 @@ fun JobPostScreen(
             Text(text = selectedDate.format(formatter))
         }
 
+        Button (
+            onClick = { jobPostViewModel.onMarkLocationClicked(isEditMode) },
+        ) {
+            Text("Mark Location")
+        }
+
         Row {
             Button(
                 onClick = {
                     // Exit early if invalid input, no need for nested if statements
-                    if (!viewModel.isValid()) {
+                    if (!jobPostViewModel.isValid()) {
                         return@Button
                     }
-                    if (viewModel.currentUserID.value != viewModel.postOwnerID.value) {
+                    if (jobPostViewModel.currentUserID.value
+                        != jobPostViewModel.postOwnerID.value) {
                         showErrorNotPostOwner.value = true
                         return@Button
                     }
                     if (isEditMode) {
-                        viewModel.updateJobPost(jobPostID!!)
+                        jobPostViewModel.updateJobPost(jobPostID!!)
                     }
                     else {
-                        viewModel.addJobPost()
+                        jobPostViewModel.addJobPost()
                     }
-                    viewModel.onJobPostRedirect()
+                    jobPostViewModel.onJobPostRedirect()
                           },
                 elevation = ButtonDefaults.buttonElevation(20.dp) ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
@@ -186,12 +205,12 @@ fun JobPostScreen(
             if (isEditMode) {
                 Button(
                     onClick = {
-                        if (viewModel.currentUserID.value != viewModel.postOwnerID.value) {
+                        if (jobPostViewModel.currentUserID.value != jobPostViewModel.postOwnerID.value) {
                             showErrorNotPostOwner.value = true
                             return@Button
                         }
-                        viewModel.deleteJobPost(jobPostID!!)
-                        viewModel.onJobPostRedirect()
+                        jobPostViewModel.deleteJobPost(jobPostID!!)
+                        jobPostViewModel.onJobPostRedirect()
                     },
                     elevation = ButtonDefaults.buttonElevation(20.dp)
                 ) {
@@ -205,7 +224,7 @@ fun JobPostScreen(
             Snackbar(
                 modifier = Modifier.padding(16.dp),
                 action = {
-                    TextButton(onClick = { viewModel.showConfirmation.value = false }) {
+                    TextButton(onClick = { jobPostViewModel.showConfirmation.value = false }) {
                         Text("OK")
                     }
                 }

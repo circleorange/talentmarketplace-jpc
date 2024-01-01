@@ -1,5 +1,7 @@
 package com.talentmarketplace.view.navigation
 
+import com.talentmarketplace.model.JobPostModel
+
 // Only classes within sealed class can inherit it's properties
 sealed class Routes(val route: String) {
     sealed class Auth(route: String): Routes(route) {
@@ -10,10 +12,14 @@ sealed class Routes(val route: String) {
     }
 
     sealed class Job(route: String): Routes(route) {
-        object List: Job("job/list")
-        object Create: Job("job/create")
-        object Get: Job("job/get/{id}") {
-            fun byID(id: String) = "job/get/$id"
+        object List: Job("jobs/")
+        object Create: Job("jobs/create")
+        object Get: Job("jobs/{id}") {
+            fun byID(id: String) = "jobs/$id"
+        }
+        object Map: Job("jobs/{id}/map") {
+            fun byCreate() = "jobs/create/map"
+            fun byGet(id: String) = "jobs/$id/map"
         }
     }
 

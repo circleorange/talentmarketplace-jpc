@@ -1,5 +1,6 @@
 package com.talentmarketplace.model
 
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
 import java.util.UUID
 
@@ -11,4 +12,5 @@ data class JobPostModel(
     var description: String = "",
     var payRange: String = "",
     var startDate: Timestamp = Timestamp(0, 0),
+    var location: LatLng? = null
 )

@@ -27,17 +27,21 @@ import com.talentmarketplace.view.screen.JobPostListScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material3.Button
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.talentmarketplace.view.component.ToolBar
+import com.talentmarketplace.view.screen.MapScreen
 import com.talentmarketplace.view.screen.ProfileScreen
 import com.talentmarketplace.view.screen.SettingsScreen
 import com.talentmarketplace.view.screen.SignInScreen
 import com.talentmarketplace.view.screen.SignUpScreen
+import com.talentmarketplace.viewmodel.JobPostViewModel
 
 data class BottomNavigationItem(
     val label: String,
@@ -57,27 +61,20 @@ fun MainScreen() {
 
     CompositionLocalProvider(LocalNavController provides navController) {
         Scaffold (
-            topBar = {
-                ToolBar()
-            },
+            topBar = { ToolBar() },
             bottomBar = {
                 // Do not show bottomBar during SignUp or SignIn
                 val currentRoute = navController
                     .currentBackStackEntryAsState()
                     .value?.destination?.route
 
-                if (
-                    currentRoute != Routes.Auth.SignUp.route
-                    && currentRoute != Routes.Auth.SignIn.route
-                ) {
+                if (currentRoute != Routes.Auth.SignUp.route
+                    && currentRoute != Routes.Auth.SignIn.route) {
                     NavigationBar (navController)
                 }
             }
-        ) {
-            innerPadding -> NavHost(
-                navController,
-                startDestination = Routes.Auth.SignIn.route,
-                Modifier.padding(innerPadding)
+        ) { innerPadding ->
+            NavHost(navController, startDestination = Routes.Auth.SignIn.route, Modifier.padding(innerPadding)
             ) {
                 composable(Routes.User.Settings.route) { SettingsScreen() }
                 composable(Routes.User.Profile.route) { ProfileScreen() }
@@ -86,12 +83,27 @@ fun MainScreen() {
                 composable(Routes.Auth.SignIn.route) { SignInScreen() }
                 composable(Routes.Job.List.route) { JobPostListScreen() }
                 composable(Routes.Job.Create.route) { JobPostScreen() }
-                composable(Routes.Job.Get.route) { backStackEntry ->
+                // Get existing Job Post by ID
+                composable(
+                    route = Routes.Job.Get.byID("{id}"),
+                    arguments = listOf(navArgument("id") { type = NavType.StringType })
+                ) { backStackEntry ->
                     val jobPostID = backStackEntry.arguments?.getString("id")
-                    JobPostScreen(
-                        jobPostID = jobPostID,
-                        isEditMode = true
-                    )
+                    JobPostScreen(jobPostID = jobPostID, isEditMode = true)
+                }
+                // Get Map screen for new Job Post
+                composable(route = Routes.Job.Map.byCreate()) { backStackEntry ->
+                    val viewModel: JobPostViewModel = hiltViewModel(backStackEntry)
+                    MapScreen(jobPostViewModel = viewModel, jobPostID = null)
+                }
+                // Get Map screen for existing Job Post
+                composable(
+                    route = Routes.Job.Map.byGet("{id}"),
+                    arguments = listOf(navArgument("id") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val jobPostID = backStackEntry.arguments?.getString("id")
+                    val viewModel: JobPostViewModel = hiltViewModel(backStackEntry)
+                    MapScreen(jobPostViewModel = viewModel, jobPostID = jobPostID!!)
                 }
             }
         }
