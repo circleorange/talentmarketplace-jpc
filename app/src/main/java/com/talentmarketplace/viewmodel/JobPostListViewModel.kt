@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostModel
 import com.talentmarketplace.repository.JobPostRepository
-import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.repository.firestore.UserFirestoreRepository
 import com.talentmarketplace.utils.SignInMethodManager
 import com.talentmarketplace.view.navigation.Routes

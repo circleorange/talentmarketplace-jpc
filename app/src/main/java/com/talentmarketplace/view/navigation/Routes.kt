@@ -13,7 +13,6 @@ sealed class Routes(val route: String) {
         object List: Job("jobs/")
         object Get: Job("jobs/{id}") {
             fun byID(id: String?) = "jobs/$id"
-            fun map(id: String?) = "jobs/$id/map"
         }
 
     }

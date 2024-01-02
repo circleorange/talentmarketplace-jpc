@@ -7,8 +7,10 @@
 
     <string name="button_addJobPosting">Add Post</string>
     <string name="button_deleteJobPost">Delete Post</string>
-    <string name="text_Title">Title</string>
+    <string name="btn_jobShowLocation">Show Location</string>
+    <string name="btn_jobMarkLocation">Mark Location</string>
 
+    <string name="text_Title">Title</string>
     <string name="text_titleHint">Enter Title</string>
     <string name="text_companyNameHint">Enter Company Name</string>
     <string name="text_jobDescriptionHint">Enter Job Description</string>

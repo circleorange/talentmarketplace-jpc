@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
@@ -32,17 +31,15 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.talentmarketplace.view.component.ToolBar
-import com.talentmarketplace.view.screen.MapScreen
+import com.talentmarketplace.view.screen.GoogleMapComponent
 import com.talentmarketplace.view.screen.ProfileScreen
 import com.talentmarketplace.view.screen.SettingsScreen
 import com.talentmarketplace.view.screen.SignInScreen
 import com.talentmarketplace.view.screen.SignUpScreen
-import com.talentmarketplace.viewmodel.JobPostViewModel
 
 data class BottomNavigationItem(
     val label: String,
@@ -90,14 +87,6 @@ fun MainScreen() {
                 ) { backStackEntry ->
                     val jobPostID = backStackEntry.arguments?.getString("id")
                     JobPostScreen(jobPostID = jobPostID)
-                }
-                // Get Map screen for Job Post
-                composable(
-                    route = Routes.Job.Get.map("{id}"),
-                    arguments = listOf(navArgument("id") { type = NavType.StringType })
-                ) { backStackEntry ->
-                    val jobPostID = backStackEntry.arguments?.getString("id")
-                    MapScreen(jobPostID = jobPostID)
                 }
             }
         }

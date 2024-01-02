@@ -1,6 +1,5 @@
 package com.talentmarketplace.viewmodel
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -41,6 +40,7 @@ class JobPostViewModel @Inject constructor(
     var description = mutableStateOf("")
     var payRange = mutableStateOf(50f..1000f)
     var startDate = mutableStateOf(LocalDate.now())
+    var jobLocation = mutableStateOf<LatLng?>(null)
 
 
     var companyNameError = mutableStateOf<String?>(null)
@@ -55,44 +55,6 @@ class JobPostViewModel @Inject constructor(
     val navEvent = _navEvent.asSharedFlow()
 
     private val _jobPost = mutableStateOf<JobPostModel?>(null)
-    val jobPost: State<JobPostModel?> = _jobPost
-
-    private val _currentJobPost = mutableStateOf<JobPostModel?>(null)
-
-    fun onMarkLocationClicked(isEditMode: Boolean) {
-        viewModelScope.launch {
-            _currentJobPost.value = JobPostModel(
-                userID = postOwnerID.value,
-                companyName = companyName.value,
-                title = title.value,
-                description = description.value,
-                payRange = payRangeToString(payRange.value),
-                startDate = localDateToTimestamp(startDate.value),
-            )
-            i("onMarkLocationClicked.currentJobPost: ${_currentJobPost.value}")
-
-            _navEvent.emit(Routes.Job.Get.map(jobPostID.value))
-        }
-    }
-
-    fun onConfirmLocation() {
-        viewModelScope.launch {
-            _navEvent.emit(Routes.Job.Get.route)
-            i("onConfirmLocation._jobPost: ${_currentJobPost.value}")
-        }
-    }
-
-    var jobLocation = mutableStateOf<LatLng?>(null)
-    fun updateLocation(markerLocation: LatLng) {
-        viewModelScope.launch {
-            i("updateLocation.markerLocation: ${jobLocation.value}")
-            val currentJobPost = _currentJobPost.value
-            if (currentJobPost != null) {
-                _currentJobPost.value = currentJobPost.copy(location = markerLocation)
-            }
-            i("updateLocation.currentJobPost: ${_currentJobPost.value}")
-        }
-    }
 
     private suspend fun getCurrentUser() {
             currentUserID.value = userRepository.getCurrentUser()!!.uid
@@ -111,9 +73,6 @@ class JobPostViewModel @Inject constructor(
         viewModelScope.launch { _navEvent.emit(Routes.Job.List.route) }
         i("JobPostListViewModel.onJobPost.redirect")
     }
-
-    // Expose job post details for composable
-    // private val _jobPostDetails = MutableStateFlow<JobPostModel?>(null)
 
     fun getJobPostByID(id: String) {
         viewModelScope.launch {
@@ -136,7 +95,9 @@ class JobPostViewModel @Inject constructor(
         description.value = jobPost.description
         payRange.value = payRangeFromString(jobPost.payRange)
         startDate.value = localDateFromTimestamp(jobPost.startDate)
-        jobLocation.value = jobPost.location
+        jobLocation.value = if (jobPost.latitude != null && jobPost.longitude != null) {
+            LatLng(jobPost.latitude, jobPost.longitude)
+        } else { null }
     }
 
     fun deleteJobPost(jobPostID: String) {
@@ -157,7 +118,8 @@ class JobPostViewModel @Inject constructor(
                 description = description.value,
                 payRange = payRangeToString(payRange.value),
                 startDate = localDateToTimestamp(startDate.value),
-                location = jobLocation.value,
+                latitude = jobLocation.value?.latitude,
+                longitude = jobLocation.value?.longitude,
             )
             i("JobPostViewModel.updateJobPost: $jobPost")
             jobRepository.updateJobPost(jobPost)
@@ -176,13 +138,21 @@ class JobPostViewModel @Inject constructor(
                 description = description.value,
                 payRange = payRangeToString(payRange.value),
                 startDate = localDateToTimestamp(startDate.value),
-                location = jobLocation.value,
+                latitude = jobLocation.value?.latitude,
+                longitude = jobLocation.value?.longitude,
             )
             _jobPost.value = newJobPost
             i("JobPostingViewModel.addJobPost: ${_jobPost.value}")
             jobRepository.createJobPost(newJobPost)
             showConfirmation.value = true
         }
+    }
+
+    fun isPostOwner(): Boolean {
+        if (currentUserID.value == postOwnerID.value) {
+            return true
+        }
+        return false
     }
 
     // Validate input
