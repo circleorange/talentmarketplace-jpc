@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.talentmarketplace.model.JobPostModel
 import com.talentmarketplace.model.UserModel
 import com.talentmarketplace.repository.JobPostRepository
@@ -15,11 +16,8 @@ import com.talentmarketplace.utils.FirestoreConversionManager.Companion.payRange
 import com.talentmarketplace.view.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.internal.immutableListOf
 import timber.log.Timber.i
 import java.time.LocalDate
 import javax.inject.Inject
@@ -28,7 +26,7 @@ import javax.inject.Inject
 class JobPostViewModel @Inject constructor(
     private val jobRepository: JobPostRepository,
     private val userRepository: UserRepository,
-) : ViewModel() {
+): ViewModel() {
 
     // User Variables
     var currentUserID = mutableStateOf("")
@@ -36,11 +34,14 @@ class JobPostViewModel @Inject constructor(
     var postOwner = mutableStateOf<UserModel?>(null)
 
     // Job Post Variables
+    val jobPostID = mutableStateOf<String?>(null)
     var companyName = mutableStateOf("")
     var title = mutableStateOf("")
     var description = mutableStateOf("")
     var payRange = mutableStateOf(50f..1000f)
     var startDate = mutableStateOf(LocalDate.now())
+    var jobLocation = mutableStateOf<LatLng?>(null)
+
 
     var companyNameError = mutableStateOf<String?>(null)
     var titleError = mutableStateOf<String?>(null)
@@ -53,11 +54,11 @@ class JobPostViewModel @Inject constructor(
     private val _navEvent = MutableSharedFlow<String>()
     val navEvent = _navEvent.asSharedFlow()
 
-    private fun getCurrentUser() {
-        viewModelScope.launch {
+    private val _jobPost = mutableStateOf<JobPostModel?>(null)
+
+    private suspend fun getCurrentUser() {
             currentUserID.value = userRepository.getCurrentUser()!!.uid
             i("getCurrentUser.end: ${currentUserID.value}")
-        }
     }
 
     private fun getJobPostOwner() {
@@ -73,29 +74,30 @@ class JobPostViewModel @Inject constructor(
         i("JobPostListViewModel.onJobPost.redirect")
     }
 
-    // Expose job post details for composable
-    private val _jobPostDetails = MutableStateFlow<JobPostModel?>(null)
-
     fun getJobPostByID(id: String) {
         viewModelScope.launch {
             jobRepository.getJobPostByID(id)?.let {
-                _jobPostDetails.value = it
+                _jobPost.value = it
                 setJobPostDetails(it)
+                i("getJobPostByID: ${_jobPost.value}")
+                getCurrentUser()
+                getJobPostOwner()
+                i("getJobPostByID.end")
             }
-            getCurrentUser()
-            getJobPostOwner()
-            i("getJobPostByID.end")
         }
-        i("JobPostViewModel.getPostByID: $_jobPostDetails")
     }
 
     private fun setJobPostDetails(jobPost: JobPostModel) {
+        jobPostID.value = jobPost.jobPostID
         postOwnerID.value = jobPost.userID
         companyName.value = jobPost.companyName
         title.value = jobPost.title
         description.value = jobPost.description
         payRange.value = payRangeFromString(jobPost.payRange)
         startDate.value = localDateFromTimestamp(jobPost.startDate)
+        jobLocation.value = if (jobPost.latitude != null && jobPost.longitude != null) {
+            LatLng(jobPost.latitude, jobPost.longitude)
+        } else { null }
     }
 
     fun deleteJobPost(jobPostID: String) {
@@ -107,7 +109,6 @@ class JobPostViewModel @Inject constructor(
 
     fun updateJobPost(jobPostID: String) {
         viewModelScope.launch {
-            i("JobPostViewModel.updateJobPost.id: $jobPostID")
 
             val jobPost = JobPostModel(
                 jobPostID = jobPostID,
@@ -117,7 +118,10 @@ class JobPostViewModel @Inject constructor(
                 description = description.value,
                 payRange = payRangeToString(payRange.value),
                 startDate = localDateToTimestamp(startDate.value),
+                latitude = jobLocation.value?.latitude,
+                longitude = jobLocation.value?.longitude,
             )
+            i("JobPostViewModel.updateJobPost: $jobPost")
             jobRepository.updateJobPost(jobPost)
             showConfirmation.value = true
         }
@@ -125,28 +129,30 @@ class JobPostViewModel @Inject constructor(
 
     fun addJobPost() {
         viewModelScope.launch {
-            // Only valid inputs past this point
+            getCurrentUser()
 
-            val jobPost = JobPostModel(
+            val newJobPost = JobPostModel(
                 userID = currentUserID.value,
                 companyName = companyName.value,
                 title = title.value,
                 description = description.value,
                 payRange = payRangeToString(payRange.value),
-                startDate = localDateToTimestamp(startDate.value)
+                startDate = localDateToTimestamp(startDate.value),
+                latitude = jobLocation.value?.latitude,
+                longitude = jobLocation.value?.longitude,
             )
-            jobRepository.createJobPost(jobPost)
+            _jobPost.value = newJobPost
+            i("JobPostingViewModel.addJobPost: ${_jobPost.value}")
+            jobRepository.createJobPost(newJobPost)
             showConfirmation.value = true
-            i("JobPostingViewModel.addJobPost: $jobPost")
         }
     }
 
-    fun clearInputFields() {
-        companyName.value = ""
-        title.value = ""
-        description.value = ""
-        payRange.value = 50f..1000f
-        startDate.value = LocalDate.now()
+    fun isPostOwner(): Boolean {
+        if (currentUserID.value == postOwnerID.value) {
+            return true
+        }
+        return false
     }
 
     // Validate input

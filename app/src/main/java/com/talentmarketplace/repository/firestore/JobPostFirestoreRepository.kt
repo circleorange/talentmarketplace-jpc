@@ -1,13 +1,11 @@
 package com.talentmarketplace.repository.firestore
 
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.toObject
 import com.talentmarketplace.model.JobPostModel
 import com.talentmarketplace.repository.JobPostRepository
 import kotlinx.coroutines.tasks.await
-import timber.log.Timber.i
 import javax.inject.Inject
 
 class JobPostFirestoreRepository @Inject constructor(

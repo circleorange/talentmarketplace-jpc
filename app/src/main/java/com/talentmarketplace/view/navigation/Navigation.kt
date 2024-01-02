@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
@@ -27,13 +26,16 @@ import com.talentmarketplace.view.screen.JobPostListScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material3.Button
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.talentmarketplace.view.component.ToolBar
+import com.talentmarketplace.view.screen.GoogleMapComponent
 import com.talentmarketplace.view.screen.ProfileScreen
 import com.talentmarketplace.view.screen.SettingsScreen
 import com.talentmarketplace.view.screen.SignInScreen
@@ -57,27 +59,20 @@ fun MainScreen() {
 
     CompositionLocalProvider(LocalNavController provides navController) {
         Scaffold (
-            topBar = {
-                ToolBar()
-            },
+            topBar = { ToolBar() },
             bottomBar = {
                 // Do not show bottomBar during SignUp or SignIn
                 val currentRoute = navController
                     .currentBackStackEntryAsState()
                     .value?.destination?.route
 
-                if (
-                    currentRoute != Routes.Auth.SignUp.route
-                    && currentRoute != Routes.Auth.SignIn.route
-                ) {
+                if (currentRoute != Routes.Auth.SignUp.route
+                    && currentRoute != Routes.Auth.SignIn.route) {
                     NavigationBar (navController)
                 }
             }
-        ) {
-            innerPadding -> NavHost(
-                navController,
-                startDestination = Routes.Auth.SignIn.route,
-                Modifier.padding(innerPadding)
+        ) { innerPadding ->
+            NavHost(navController, startDestination = Routes.Auth.SignIn.route, Modifier.padding(innerPadding)
             ) {
                 composable(Routes.User.Settings.route) { SettingsScreen() }
                 composable(Routes.User.Profile.route) { ProfileScreen() }
@@ -85,13 +80,13 @@ fun MainScreen() {
                 composable(Routes.Auth.SignOut.route) { SignInScreen() }
                 composable(Routes.Auth.SignIn.route) { SignInScreen() }
                 composable(Routes.Job.List.route) { JobPostListScreen() }
-                composable(Routes.Job.Create.route) { JobPostScreen() }
-                composable(Routes.Job.Get.route) { backStackEntry ->
+                // Get Job Post by ID, null ID means new Job Post
+                composable(
+                    route = Routes.Job.Get.byID("{id}"),
+                    arguments = listOf(navArgument("id") { type = NavType.StringType })
+                ) { backStackEntry ->
                     val jobPostID = backStackEntry.arguments?.getString("id")
-                    JobPostScreen(
-                        jobPostID = jobPostID,
-                        isEditMode = true
-                    )
+                    JobPostScreen(jobPostID = jobPostID)
                 }
             }
         }
@@ -127,7 +122,7 @@ fun NavigationBar(navController: NavController) {
     )
 
     var selectedItemIndex by rememberSaveable {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
 
     NavigationBar {
@@ -138,7 +133,7 @@ fun NavigationBar(navController: NavController) {
                     selectedItemIndex = index
                     when (index) {
                         0 -> navController.navigate(Routes.Job.List.route)
-                        1 -> navController.navigate(Routes.Job.Create.route)
+                        1 -> navController.navigate(Routes.Job.Get.byID(null))
                         2 -> navController.navigate(Routes.User.Profile.route)
                         3 -> navController.navigate(Routes.User.Settings.route)
                     }

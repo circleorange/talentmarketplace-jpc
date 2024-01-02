@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.talentmarketplace.model.JobPostModel
 import com.talentmarketplace.repository.JobPostRepository
-import com.talentmarketplace.repository.auth.BasicAuthRepository
 import com.talentmarketplace.repository.firestore.UserFirestoreRepository
 import com.talentmarketplace.utils.SignInMethodManager
 import com.talentmarketplace.view.navigation.Routes
@@ -48,14 +47,14 @@ class JobPostListViewModel @Inject constructor(
 
     fun getJobPosts() {
         viewModelScope.launch {
-            i("JobPostListViewModel.getJobPosts")
+            i("getJobPosts")
             _jobPosts.value = jobRepository.getJobPosts()
         }
     }
 
     fun getJobPostsByUser() {
         viewModelScope.launch {
-            i("JobPostListViewModel.getJobPostsByUser")
+            i("getJobPostsByUser")
             val currentUser = userRepository.getCurrentUser()!!
             _jobPosts.value = jobRepository.getJobPostsByUserID(currentUser.uid)
         }

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -21,6 +23,17 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Load API key from local.properties
+        val localPropertiesFile = rootProject.file("local.properties")
+        val localProperties = Properties()
+        if (localPropertiesFile.exists()) {
+            localProperties.load(localPropertiesFile.inputStream())
+        }
+        // Add API key to BuildConfig
+        val mapsApiKey = localProperties["MAPS_API_KEY"] as? String ?: ""
+        buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {
@@ -41,6 +54,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -101,8 +115,13 @@ dependencies {
 
     // Handling Images
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Google Maps
+    implementation("com.google.maps.android:maps-compose:2.5.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 }
 
 kapt {
     correctErrorTypes = true
 }
+
