@@ -12,7 +12,7 @@ class BasicAuthRepositoryImpl @Inject constructor() : BasicAuthRepository {
 
     override suspend fun signIn(email: String, password: String): Result<UserModel> {
         // find user
-        val user = users.firstOrNull { it.email == email && it.password == password }
+        val user = users.firstOrNull { it.email == email }
         return if (user != null) {
             signedInUser = user
             Result.success(user)
@@ -41,7 +41,6 @@ class BasicAuthRepositoryImpl @Inject constructor() : BasicAuthRepository {
             firstName = fName,
             lastName = lName,
             email = email,
-            password = password,
             username = null,
             profilePictureUrl = null,
         )

@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.toObject
-import com.talentmarketplace.model.FirestoreUserModel
 import com.talentmarketplace.model.UserModel
 import com.talentmarketplace.repository.UserRepository
 import kotlinx.coroutines.tasks.await
@@ -29,12 +28,38 @@ class UserFirestoreRepository @Inject constructor(
         }
     }
 
+    override suspend fun updateUser(user: UserModel) {
+        try {
+            usersCollection
+                .document(user.uid)
+                .set(user)
+                .await()
+        }
+        catch (e: FirebaseFirestoreException) {
+            e.printStackTrace()
+        }
+    }
+
     override suspend fun getCurrentUser(): UserModel? {
         val currentUser = firebaseAuth.currentUser ?: return null
 
         return try {
             usersCollection
                 .document(currentUser.uid)
+                .get()
+                .await()
+                .toObject<UserModel>()
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    override suspend fun getUserByID(uid: String): UserModel? {
+        return try {
+            usersCollection
+                .document(uid)
                 .get()
                 .await()
                 .toObject<UserModel>()

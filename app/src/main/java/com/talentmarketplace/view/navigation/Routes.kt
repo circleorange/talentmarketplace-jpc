@@ -10,11 +10,11 @@ sealed class Routes(val route: String) {
     }
 
     sealed class Job(route: String): Routes(route) {
-        object List: Job("job/list")
-        object Create: Job("job/create")
-        object Get: Job("job/get/{id}") {
-            fun byID(id: String) = "job/get/$id"
+        object List: Job("jobs/")
+        object Get: Job("jobs/{id}") {
+            fun byID(id: String?) = "jobs/$id"
         }
+
     }
 
     sealed class User(route: String): Routes(route) {
